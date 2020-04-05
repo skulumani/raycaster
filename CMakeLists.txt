@@ -38,11 +38,18 @@ ENABLE_TESTING()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 ################################################################################
+# STB Dependencies
+################################################################################
+include_directories(
+    $(PROJECT_SOURCE_DIR)/extern/stb)
+
+################################################################################
 # BUILD TARGETS
 ################################################################################
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_executable(main 
     src/main.cpp 
+    src/graphics.cpp
 )
 # target_link_libraries(main
 ################################################################################
@@ -53,6 +60,7 @@ ENABLE_TESTING()
 set(test_all_src 
     tests/test_all.cpp
     tests/test_gtest.cpp
+    tests/test_stb.cpp
     )
 
 add_executable(test_all ${test_all_src})
