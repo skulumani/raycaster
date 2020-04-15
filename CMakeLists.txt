@@ -62,6 +62,8 @@ set(test_all_src
     tests/test_all.cpp
     tests/test_gtest.cpp
     tests/test_stb.cpp
+    tests/test_map.cpp
+    src/map.cpp
     )
 
 add_executable(test_all ${test_all_src})

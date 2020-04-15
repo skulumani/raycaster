@@ -6,8 +6,11 @@
 class Map {
     public:
         Map( void );
+        Map( size_t map_size);
         virtual ~Map( void ) {};
         
+        void init( void );
+
         Eigen::MatrixXi get_map( void ) const;
         
         size_t get_map_size( void ) const;
