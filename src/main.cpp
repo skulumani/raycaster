@@ -6,9 +6,10 @@
 
 int main() {
     Renderer engine;
-    Map grid(32);
+    Map grid(16);
 
-    engine.gradient();
+    /* engine.gradient(); */
+    engine.constant((Eigen::Vector3f() << 0.5, 0.5, 0.5).finished());
     engine.draw_map(grid);
     engine.write();    
 

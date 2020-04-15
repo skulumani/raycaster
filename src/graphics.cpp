@@ -20,7 +20,16 @@ void Renderer::gradient( void ) {
             m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << jj/float(m_height), ii/float(m_width), 0).finished();
         }
     }
+}
 
+void Renderer::constant(const Eigen::Ref<const Eigen::Vector3f>& input_color) {
+    // loop over pixels in the frame buffer
+    #pragma omp parallel for
+    for (size_t jj = 0; jj < m_height; jj++) {
+        for (size_t ii = 0; ii < m_width; ii++) {
+            m_framebuffer[ii+jj*m_width] = input_color;
+        }
+    }
 }
 
 void Renderer::write( void ) {

@@ -20,6 +20,9 @@ class Renderer {
         
         // File framebuffer with a gradient color scheme
         void gradient( void ); 
+
+        void constant(const Eigen::Ref<const Eigen::Vector3f>& input_color);
+
         void write( void );
 
         // input the map/grid and draw a solid color for each cube
