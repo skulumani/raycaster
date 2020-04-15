@@ -6,7 +6,7 @@
 
 int main() {
     Renderer engine;
-    Map grid;
+    Map grid(32);
 
     engine.gradient();
     engine.draw_map(grid);

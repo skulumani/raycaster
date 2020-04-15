@@ -14,6 +14,7 @@ Renderer::Renderer( void ) {
 
 void Renderer::gradient( void ) {
     // loop over pixels in the frame buffer
+    #pragma omp parallel for
     for (size_t jj = 0; jj < m_height; jj++) {
         for (size_t ii = 0; ii < m_width; ii++) {
             m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << jj/float(m_height), ii/float(m_width), 0).finished();
@@ -26,7 +27,7 @@ void Renderer::write( void ) {
     
     // now saving to file
     std::uint8_t image[m_height * m_width * 3];
-    
+    #pragma omp parallel for
     for (size_t ii = 0; ii < m_width * m_height; ii++) {
         image[ii * 3 + 0] = (int)(255 * m_framebuffer[ii](0));
         image[ii * 3 + 1] = (int)(255 * m_framebuffer[ii](1));
@@ -42,6 +43,8 @@ void Renderer::draw_map(const Map& input_map) {
     
     Eigen::Vector2f point_coord;
     Eigen::Vector2i pixel_coord, grid_coord;
+
+    #pragma omp parallel for
     for (size_t jj = 0; jj < m_height; jj++) {
         for (size_t ii = 0; ii < m_width; ii++) {
             // convert from pixel to map units

@@ -18,9 +18,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 # set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Find OpenMP
-# set(ENV{OMP_NUM_THREADS} 4)
-# set(ENV{OMP_NESTED} TRUE)
-# find_package(OpenMP REQUIRED)
+set(ENV{OMP_NUM_THREADS} 4)
+set(ENV{OMP_NESTED} TRUE)
+find_package(OpenMP REQUIRED)
 
 # Eigen setup
 find_package(Eigen3 REQUIRED)
