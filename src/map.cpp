@@ -21,6 +21,7 @@ void Map::init( void ) {
     // define interior
     m_map(1, 5) = 1;
 }
+
 Eigen::MatrixXi Map::get_map( void ) const {
     return m_map;
 }

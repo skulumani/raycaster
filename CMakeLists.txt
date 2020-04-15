@@ -51,6 +51,7 @@ add_executable(main
     src/main.cpp 
     src/graphics.cpp
     src/map.cpp
+    src/player.cpp
 )
 # target_link_libraries(main
 ################################################################################
