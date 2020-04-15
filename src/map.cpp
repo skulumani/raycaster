@@ -39,3 +39,19 @@ Eigen::Vector2f Map::grid2point(const Eigen::Ref<const  Eigen::Vector2i>& grid_c
     /* m_height; // returns bottom left coord of cube */
     return point_coord * m_height;
 }
+
+bool Map::inside_map(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) {
+    if (grid_coord.maxCoeff() < m_size && grid_coord.minCoeff() >= 0 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Map::inside_map(const Eigen::Ref<const Eigen::Vector2f>& point_coord) {
+    if (point_coord.maxCoeff() < (m_size * m_height) && point_coord.minCoeff() >= 0 ) {
+        return true;
+    } else {
+        return false;
+    }
+}

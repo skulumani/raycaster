@@ -42,10 +42,43 @@ TEST(TestMap, Grid2PointOrigin) {
 
 TEST(TestMap, Grid2PointOneOne) {
     Map grid;
-    // define a grid point
     Eigen::Vector2i grid_coord(1, 1);
     Eigen::Vector2f point_coord = grid.grid2point(grid_coord);
-    std::cout << point_coord << std::endl;
     ASSERT_TRUE(point_coord.isApprox((Eigen::Vector2f() << 64, 64).finished()));
 }
 
+TEST(TestMap, PointInsideMap) {
+    Map grid;
+    Eigen::Vector2f point_coord(120, 120);
+    ASSERT_TRUE(grid.inside_map(point_coord));
+}
+
+TEST(TestMap, PointOutsideMapPositive) {
+    Map grid;
+    Eigen::Vector2f point_coord(1025, 1025);
+    ASSERT_FALSE(grid.inside_map(point_coord));
+}
+
+TEST(TestMap, PointOutsideMapNegative) {
+    Map grid;
+    Eigen::Vector2f point_coord(-1025, -1025);
+    ASSERT_FALSE(grid.inside_map(point_coord));
+}
+
+TEST(TestMap, GridOutsideMapNegative) {
+    Map grid;
+    Eigen::Vector2i grid_coord(-20, 0);
+    ASSERT_FALSE(grid.inside_map(grid_coord));
+}
+
+TEST(TestMap, GridOutsideMapPositive) {
+    Map grid;
+    Eigen::Vector2i grid_coord(20, 0);
+    ASSERT_FALSE(grid.inside_map(grid_coord));
+}
+
+TEST(TestMap, GridInsideMap) {
+    Map grid;
+    Eigen::Vector2i grid_coord(3, 4);
+    ASSERT_TRUE(grid.inside_map(grid_coord));
+}
