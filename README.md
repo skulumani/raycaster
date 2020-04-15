@@ -1,5 +1,8 @@
 # Raycaster
 
+* [ ] Render everything using Vulkan
+* [ ] Setup KB inputs using GLFW
+* [ ] Link to teensy for attitude
 # References
 
 * https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html
