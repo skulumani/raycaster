@@ -29,12 +29,13 @@ size_t Map::get_map_size( void ) const {
     return m_size;
 }
 
-Eigen::Vector2i Map::point2grid(const Eigen::Ref<const Eigen::Vector2i>& point_coord) {
-    Eigen::Vector2i grid_coord = point_coord / m_height;
-    return grid_coord;
+Eigen::Vector2i Map::point2grid(const Eigen::Ref<const Eigen::Vector2f>& point_coord) {
+    Eigen::Vector2i grid_coord(point_coord(0), point_coord(1));
+    return grid_coord / m_height;
 }
 
-Eigen::Vector2i Map::grid2point(const Eigen::Ref<const  Eigen::Vector2i>& grid_coord) {
-    Eigen::Vector2i point_coord = grid_coord * m_height; // returns bottom left coord of cube
-    return point_coord;
+Eigen::Vector2f Map::grid2point(const Eigen::Ref<const  Eigen::Vector2i>& grid_coord) {
+    Eigen::Vector2f point_coord(grid_coord(0), grid_coord(1));
+    /* m_height; // returns bottom left coord of cube */
+    return point_coord * m_height;
 }
