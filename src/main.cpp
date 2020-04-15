@@ -9,8 +9,8 @@ int main() {
     Map grid;
 
     engine.gradient();
+    engine.draw_map(grid);
     engine.write();    
 
-    std::cout << grid.get_map() << std::endl;
     return 0;
 }

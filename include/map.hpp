@@ -17,12 +17,16 @@ class Map {
         size_t get_map_size( void ) const;
         size_t get_cube_size( void ) const;
         // function to convert from location coord to grid/block coord
-        Eigen::Vector2i point2grid(const Eigen::Ref<const Eigen::Vector2f>& point_coord);
-        Eigen::Vector2f grid2point(const Eigen::Ref<const Eigen::Vector2i>& grid_coord); // returns the lower left corner of cube
+        Eigen::Vector2i point2grid(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
+        Eigen::Vector2f grid2point(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const; // returns the lower left corner of cube
 
         // functiont to check if grid coord is within the map
-        bool inside_map(const Eigen::Ref<const Eigen::Vector2i>& grid_coord);
-        bool inside_map(const Eigen::Ref<const Eigen::Vector2f>& point_coord);
+        bool inside_map(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const;
+        bool inside_map(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
+
+        // check if grid/point is within a wall or is filled
+        bool inside_wall(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
+        bool inside_wall(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const;
     private:
         
         size_t m_height = 64; // every block is size 64 units across

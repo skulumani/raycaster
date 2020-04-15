@@ -1,5 +1,7 @@
 #include "graphics.hpp"
 
+#include <Eigen/Dense>
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
@@ -36,6 +38,22 @@ void Renderer::write( void ) {
 
 
 void Renderer::draw_map(const Map& input_map) {
-    // scale the map to fill the framebuffer window
-    // compute 
+    double pixel2map = input_map.get_cube_size() * input_map.get_map_size() * 1.0 / m_height;
+    
+    Eigen::Vector2f point_coord;
+    Eigen::Vector2i pixel_coord, grid_coord;
+    for (size_t jj = 0; jj < m_height; jj++) {
+        for (size_t ii = 0; ii < m_width; ii++) {
+            // convert from pixel to map units
+            pixel_coord <<  ii, jj;
+            point_coord << ii, jj;
+            point_coord = point_coord * pixel2map;
+            // loop over each pixel in the framebuffer and compute grid location
+            grid_coord = input_map.point2grid(point_coord);
+            // if inside grid point then draw special color, if not then do nothing
+            if (input_map.inside_wall(grid_coord) ) {
+                m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << 0, 1, 1).finished();
+            } 
+        }
+    }
 }
