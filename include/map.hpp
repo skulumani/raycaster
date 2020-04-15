@@ -8,22 +8,20 @@ class Map {
         Map( void );
         virtual ~Map( void ) {};
         
+        Eigen::MatrixXi get_map( void ) const;
+        
+        size_t get_map_size( void ) const;
+        size_t get_cube_size( void ) const;
+        // function to convert from location coord to grid/block coord
+        Eigen::Vector2i point2grid(const Eigen::Ref<const Eigen::Vector2i>& point_coord);
+        Eigen::Vector2i grid2point(const Eigen::Ref<const Eigen::Vector2i>& grid_coord);
 
+        // functiont to check if outside total map
     private:
         
-        size_t height = 64; // all walls made up of cubes of size 64
-        size_t size = 10;
-        Eigen::Matrix<int, 10, 10> grid;
-            /* 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, */ 
-            /* 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, */
-            /* 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, */
-            /* 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, */
-            /* 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, */
-            /* 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, */
-            /* 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, */
-            /* 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, */
-            /* 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, */
-            /* 1, 1, 1, 1, 1, 1, 1, 1, 1, 1; */
+        size_t m_height = 64; // every block is size 64 units across
+        size_t m_size = 16; // number of cubes/blocks in the map
+        Eigen::MatrixXi m_map;
 };
 
 #endif

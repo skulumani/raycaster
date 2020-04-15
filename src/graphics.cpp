@@ -33,3 +33,9 @@ void Renderer::write( void ) {
 
     stbi_write_jpg("out.jpg", m_width, m_height, 3, image, 95);
 }
+
+
+void Renderer::draw_map(const Map& input_map) {
+    // scale the map to fill the framebuffer window
+    // compute 
+}

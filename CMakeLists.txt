@@ -50,6 +50,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_executable(main 
     src/main.cpp 
     src/graphics.cpp
+    src/map.cpp
 )
 # target_link_libraries(main
 ################################################################################
