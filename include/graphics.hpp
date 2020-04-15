@@ -2,6 +2,7 @@
 #define GRAPHICS_HPP
 
 #include "map.hpp"
+#include "player.hpp"
 
 #include <Eigen/Dense>
 #include <Eigen/StdVector> 
@@ -24,6 +25,9 @@ class Renderer {
         // input the map/grid and draw a solid color for each cube
         void draw_map(const Map& input_map); 
         // given a location coord draw a pixel
+
+        // draw player location
+        void draw_player(const Player& input_player);
     private:
         int m_width = 512;
         int m_height = 512;

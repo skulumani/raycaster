@@ -10,16 +10,22 @@ class Player {
     public:
         Player( void );
         virtual ~Player( void ) {};
-
+    
+        void init( void );
+        
+        Eigen::Vector2f get_point_coord( void ) const;
+        Eigen::Vector2i get_grid_coord( void ) const;
+        
+        float get_direction( void ) const;
     private:
     
-        Eigen::Vector2f point_pos;
-        Eigen::Vector2i grid_pos;
+        Eigen::Vector2f m_point_coord;
+        Eigen::Vector2i m_grid_coord;
 
-        float direction = 0; // view direction, angle CCW from x axis
+        float m_direction = 0; // view direction, angle CCW from x axis
         
-        float height = 32;
-        float fov = 60 * PI/180.0;
+        float m_height = 32;
+        float m_fov = 60 * PI/180.0;
 
         /* size_t image_width = 320; */
         /* size_t image_height = 200; */
