@@ -30,7 +30,7 @@ class Renderer {
         // given a location coord draw a pixel
 
         // draw player location
-        void draw_player(const Player& input_player);
+        void draw_player(const Player& input_player, const Map& input_map);
     private:
         int m_width = 512;
         int m_height = 512;

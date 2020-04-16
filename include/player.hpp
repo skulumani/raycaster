@@ -14,13 +14,13 @@ class Player {
         void init( void );
         
         Eigen::Vector2f get_point_coord( void ) const;
-        Eigen::Vector2i get_grid_coord( void ) const;
-        
+       
+        void set_point_coord( const Eigen::Ref<const Eigen::Vector2f>& input_coord);
+
         float get_direction( void ) const;
     private:
     
         Eigen::Vector2f m_point_coord;
-        Eigen::Vector2i m_grid_coord;
 
         float m_direction = 0; // view direction, angle CCW from x axis
         
