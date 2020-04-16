@@ -84,8 +84,8 @@ void Renderer::draw_point(const Map& input_map,
     size_t player_half_size = 2; // half size in pixels of marker
     float pixel2map = input_map.get_cube_size() * input_map.get_map_size() * 1.0 / m_height;
     float map2pixel = 1.0 / pixel2map;
+    Eigen::Vector2i pixel_coord(point_coord(1)*map2pixel, point_coord(0)*map2pixel);
 
-    Eigen::Vector2i pixel_coord = (point_coord * map2pixel).cast<int>();
     // get the pixel extents of the player marker
 
     #pragma omp parallel for

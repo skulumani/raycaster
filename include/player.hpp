@@ -25,6 +25,8 @@ class Player {
         float cast_horizontal(const Map& input_map);
         float cast_vertical(const Map& input_map);
     
+        float cast(const Map& input_map);
+
         Eigen::Vector2f find_wall(const Map& input_map, 
                 const Eigen::Ref<const Eigen::Vector2f>& grid_pos,
                 const float& delta_x, const float& delta_y);

@@ -19,7 +19,7 @@ void Map::init( void ) {
     m_map.col(m_map.cols()-1) = Eigen::VectorXi::Constant(m_size, 1);
 
     // define interior
-    m_map(1, 5) = 1;
+    /* m_map(1, 5) = 1; */
 }
 
 Eigen::MatrixXi Map::get_map( void ) const {

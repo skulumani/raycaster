@@ -36,7 +36,8 @@ class Renderer {
                         const Eigen::Ref<const Eigen::Vector2f>& point_coord,
                         const Eigen::Ref<const Eigen::Vector3f>& primary_color=(Eigen::Vector3f() << 1, 0, 0).finished(),
                         const Eigen::Ref<const Eigen::Vector3f>& secondary_color=(Eigen::Vector3f() << 0, 1, 0).finished());
-
+    
+        void draw_cast(const Player& input_player);
     private:
         int m_width = 512;
         int m_height = 512;
