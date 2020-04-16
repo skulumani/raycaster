@@ -82,3 +82,43 @@ TEST(TestMap, GridInsideMap) {
     Eigen::Vector2i grid_coord(3, 4);
     ASSERT_TRUE(grid.inside_map(grid_coord));
 }
+
+TEST(TestMap, GridInsideWall) {
+    Map grid;
+    Eigen::Vector2i grid_coord(0,0);
+    ASSERT_TRUE(grid.inside_wall(grid_coord));
+}
+
+TEST(TestMap, GridOutsideWall) {
+    Map grid;
+    Eigen::Vector2i grid_coord(2,2);
+    ASSERT_FALSE(grid.inside_wall(grid_coord));
+}
+
+TEST(TestMap, PointInsideWall) {
+    Map grid;
+    size_t cube_size = grid.get_cube_size();
+    Eigen::Vector2f point_coord(cube_size / 2.0, cube_size / 2.0);
+    ASSERT_TRUE(grid.inside_wall(point_coord));
+}
+
+TEST(TestMap, PointOutsideWall) {
+    Map grid;
+    size_t cube_size = grid.get_cube_size();
+    Eigen::Vector2f point_coord(cube_size * 2.0, cube_size * 2.0);
+    ASSERT_FALSE(grid.inside_wall(point_coord));
+}
+
+TEST(TestMap, PointOutsideEdgeWall) {
+    Map grid;
+    size_t cube_size = grid.get_cube_size();
+    Eigen::Vector2f point_coord(cube_size, cube_size);
+    ASSERT_FALSE(grid.inside_wall(point_coord));
+}
+
+TEST(TestMap, PointInsideEdgeWall) {
+    Map grid;
+    size_t cube_size = grid.get_cube_size();
+    Eigen::Vector2f point_coord(cube_size*0.99, cube_size*0.99);
+    ASSERT_TRUE(grid.inside_wall(point_coord));
+}
