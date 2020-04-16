@@ -1,6 +1,8 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+#include "map.hpp"
+
 #include <Eigen/Dense>
 
 const double PI = std::atan(1.0)*4;
@@ -18,11 +20,20 @@ class Player {
         void set_point_coord( const Eigen::Ref<const Eigen::Vector2f>& input_coord);
 
         float get_direction( void ) const;
+        void set_direction(const float& input_angle);
+
+        float cast_horizontal(const Map& input_map);
+        float cast_vertical(const Map& input_map);
+    
+        Eigen::Vector2f find_wall(const Map& input_map, 
+                const Eigen::Ref<const Eigen::Vector2f>& grid_pos,
+                const float& delta_x, const float& delta_y);
+
     private:
     
         Eigen::Vector2f m_point_coord;
 
-        float m_direction = 0; // view direction, angle CCW from x axis
+        float m_direction = 0; // view direction, angle CW from x axis radians (0 - right, pi/2 - down) always between 0 and 360
         
         float m_height = 32;
         float m_fov = 60 * PI/180.0;

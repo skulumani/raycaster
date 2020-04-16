@@ -11,14 +11,14 @@ class Map {
         
         void init( void );
 
-        // Map defined with x,y coord. Origin is bottom left of map
+        // Map defined with x,y coord. Origin is top left of map
         Eigen::MatrixXi get_map( void ) const;
         
         size_t get_map_size( void ) const;
         size_t get_cube_size( void ) const;
         // function to convert from location coord to grid/block coord
         Eigen::Vector2i point2grid(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
-        Eigen::Vector2f grid2point(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const; // returns the lower left corner of cube
+        Eigen::Vector2f grid2point(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const; // returns the top left pixel of cube
 
         // functiont to check if grid coord is within the map
         bool inside_map(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const;
