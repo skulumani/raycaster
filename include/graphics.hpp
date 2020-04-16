@@ -37,7 +37,10 @@ class Renderer {
                         const Eigen::Ref<const Eigen::Vector3f>& primary_color=(Eigen::Vector3f() << 1, 0, 0).finished(),
                         const Eigen::Ref<const Eigen::Vector3f>& secondary_color=(Eigen::Vector3f() << 0, 1, 0).finished());
     
-        void draw_cast(const Player& input_player);
+        void draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
+                       const Eigen::Ref<const Eigen::Vector2f>& end_point,
+                       const Map& input_map);
+
     private:
         int m_width = 512;
         int m_height = 512;

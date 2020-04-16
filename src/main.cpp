@@ -24,6 +24,7 @@ int main() {
     engine.draw_map(grid);
     engine.draw_player(player, grid);
     engine.draw_point(grid, endpoint);
+    engine.draw_line(player.get_point_coord(), endpoint, grid);
     // draw wall intersection point
     
     engine.write();    

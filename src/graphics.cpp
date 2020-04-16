@@ -103,3 +103,25 @@ void Renderer::draw_point(const Map& input_map,
     m_framebuffer[pixel_coord(1) + pixel_coord(0) * m_width] = secondary_color;
 
 }
+
+void Renderer::draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
+                         const Eigen::Ref<const Eigen::Vector2f>& end_point,
+                         const Map& input_map) {
+    
+    // draw line between start and end
+    float pixel2map = input_map.get_cube_size() * input_map.get_map_size() * 1.0 / m_height;
+    float map2pixel = 1.0 / pixel2map;
+    /* Eigen::Vector2i pixel_coord(point_coord(1)*map2pixel, point_coord(0)*map2pixel); */
+    Eigen::Vector2f unit_vec = (end_point-start_point).normalized();
+    Eigen::Vector2f point_coord = start_point;
+    Eigen::Vector2i pixel_coord;
+    
+    #pragma omp parallel for
+    for (float d = 0; d < (start_point - end_point).norm(); d+=0.01) {
+        // compute pixel location on line
+        point_coord = start_point + d * unit_vec;
+        pixel_coord << point_coord(1)*map2pixel, point_coord(0)*map2pixel;
+
+        m_framebuffer[pixel_coord(1) + pixel_coord(0)*m_width] = (Eigen::Vector3f() << 1, 1, 1).finished();
+    }
+}
