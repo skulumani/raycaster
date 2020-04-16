@@ -13,7 +13,7 @@ int main() {
     player.set_point_coord((Eigen::Vector2f() << 3.0/2 * cube_size, 3.0/2 * cube_size).finished());
     player.set_direction(0.25*PI);
 
-    float dist = player.cast(grid); 
+    float dist = player.cast(player.get_direction(),grid); 
 
     std::cout << "Dist: " << dist << std::endl;
     Eigen::Vector2f endpoint = player.cast_endpoint(dist);

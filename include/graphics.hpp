@@ -40,7 +40,8 @@ class Renderer {
         void draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
                        const Eigen::Ref<const Eigen::Vector2f>& end_point,
                        const Map& input_map);
-
+    
+        void draw_fov(const Player& player, const Map& input_map);
     private:
         int m_width = 512;
         int m_height = 512;

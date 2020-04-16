@@ -125,3 +125,15 @@ void Renderer::draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
         m_framebuffer[pixel_coord(1) + pixel_coord(0)*m_width] = (Eigen::Vector3f() << 1, 1, 1).finished();
     }
 }
+
+void Renderer::draw_fov(const Player& player, const Map& input_map) {
+    float fov = player.get_fov();
+    for (size_t ii=0;ii<m_width;ii++) {
+        // loop over FOV and cast a ray in each direction
+        float angle = player.get_direction() - fov/2.0 +  fov * ii / float(m_width);
+        float dist = player.cast(angle, input_map);
+        Eigen::Vector2f endpoint = player.cast_endpoint(dist);
+        // draw line for each cast
+        draw_line(player.get_point_coord(), endpoint, input_map);
+    }
+}
