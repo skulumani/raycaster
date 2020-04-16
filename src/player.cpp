@@ -31,13 +31,14 @@ void Player::set_direction(const float& input_angle) {
     m_direction = (m_direction < 0) ? m_direction + 2*PI : m_direction;
 }
 
+// finds nearest horizontal wall intersection
 float Player::cast_horizontal(const Map& input_map) {
     // check if looking upwards or downwards
     bool up = (m_direction > PI);
     bool right = (m_direction < PI/2.0) || (m_direction > 3/4 * PI); 
      
     // find nearest grid intersection
-    float intersection_y = std::floor(m_point_coord(1) / input_map.get_cube_size()) * input_map.get_cube_size() + (up ? -0.01 : input_map.get_cube_size());
+    float intersection_y = std::floor(m_point_coord(1) / input_map.get_cube_size()) * input_map.get_cube_size() + (up ? -0.001 : input_map.get_cube_size());
     float intersection_x = m_point_coord(0) + (intersection_y - m_point_coord(1)) / std::tan(m_direction);
     Eigen::Vector2f grid_int(intersection_x, intersection_y);
    
@@ -49,16 +50,18 @@ float Player::cast_horizontal(const Map& input_map) {
     return (m_point_coord - wall_int).norm();
 }
 
+// finds the closest vertical wall intersection
 float Player::cast_vertical(const Map& input_map) {
     // check if looking upwards or downwards
     bool up = (m_direction > PI);
-    bool right = (m_direction < PI/2.0) || (m_direction > 3/4 * PI); 
-     
+    bool right = (m_direction < PI/2.0) || (m_direction > 3.0/2.0 * PI); 
+    
     // find nearest grid intersection
-    float intersection_x = std::floor(m_point_coord(0) / input_map.get_cube_size()) * input_map.get_cube_size() + (right ?  input_map.get_cube_size() : -0.01);
-    float intersection_y = m_point_coord(1) + (intersection_x - m_point_coord(0)) / std::tan(m_direction);
+    float intersection_x = std::floor(m_point_coord(0) / input_map.get_cube_size()) * input_map.get_cube_size() + (right ? input_map.get_cube_size() : -0.001);
+    float intersection_y = m_point_coord(1) + (intersection_x - m_point_coord(0)) * std::tan(m_direction);
     Eigen::Vector2f grid_int(intersection_x, intersection_y);
-   
+    
+    std::cout << "First int: " << intersection_x << ", " << intersection_y << std::endl;
     // calculate deltas to get the next grid intersections
     float delta_x = right ? input_map.get_cube_size() : -input_map.get_cube_size();
     float delta_y = std::abs(input_map.get_cube_size() / std::tan(m_direction)) * (up ? -1 : 1);
