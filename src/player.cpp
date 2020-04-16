@@ -61,7 +61,6 @@ float Player::cast_vertical(const Map& input_map) {
     float intersection_y = m_point_coord(1) + (intersection_x - m_point_coord(0)) * std::tan(m_direction);
     Eigen::Vector2f grid_int(intersection_x, intersection_y);
     
-    std::cout << "First int: " << intersection_x << ", " << intersection_y << std::endl;
     // calculate deltas to get the next grid intersections
     float delta_x = right ? input_map.get_cube_size() : -input_map.get_cube_size();
     float delta_y = std::abs(input_map.get_cube_size() / std::tan(m_direction)) * (up ? -1 : 1);
@@ -88,6 +87,11 @@ Eigen::Vector2f Player::find_wall(const Map& input_map, const Eigen::Ref<const E
     return find_wall(input_map, new_pos, delta_x, delta_y);
 }
 
-
+Eigen::Vector2f Player::cast_endpoint(const float& dist) {
+    // compute end point given distance and angle
+    Eigen::Vector2f endpoint;
+    endpoint = m_point_coord + dist * (Eigen::Vector2f() << std::cos(m_direction), std::sin(m_direction)).finished();
+    return endpoint;
+}
 
 

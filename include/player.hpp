@@ -28,6 +28,9 @@ class Player {
         Eigen::Vector2f find_wall(const Map& input_map, 
                 const Eigen::Ref<const Eigen::Vector2f>& grid_pos,
                 const float& delta_x, const float& delta_y);
+    
+        // return a point at dist in direction of m_direction from m_point_coord
+        Eigen::Vector2f cast_endpoint(const float& dist);
 
     private:
     
