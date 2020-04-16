@@ -11,7 +11,7 @@ int main() {
     size_t cube_size = grid.get_cube_size();
 
     player.set_point_coord((Eigen::Vector2f() << 3.0/2 * cube_size, 3.0/2 * cube_size).finished());
-    player.set_direction(0.0*PI);
+    player.set_direction(0.25*PI);
 
     float dist = player.cast(grid); 
 

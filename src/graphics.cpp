@@ -117,7 +117,7 @@ void Renderer::draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
     Eigen::Vector2i pixel_coord;
     
     #pragma omp parallel for
-    for (float d = 0; d < (start_point - end_point).norm(); d+=0.01) {
+    for (float d = 0; d < (start_point - end_point).norm(); d+=0.1) {
         // compute pixel location on line
         point_coord = start_point + d * unit_vec;
         pixel_coord << point_coord(1)*map2pixel, point_coord(0)*map2pixel;
