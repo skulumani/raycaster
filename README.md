@@ -7,7 +7,7 @@
 * [ ] Method to add blocks to map
 * [ ] Different colors of cubes in map
 * [ ] draw floors and ceilings
-* [ ] texture mapping
+* [ ] [texture mapping](https://lodev.org/cgtutor/raycasting.html)
 *
 # References
 
