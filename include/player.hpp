@@ -5,6 +5,8 @@
 
 #include <Eigen/Dense>
 
+#include <tuple>
+
 const double PI = std::atan(1.0)*4;
 
 class Player {
@@ -25,7 +27,7 @@ class Player {
         float get_angle_step(void) const;
         float get_projection_dist(void) const;
 
-        float cast(const float& direction, const Map& input_map) const;
+        std::tuple<float, int> cast(const float& direction, const Map& input_map) const;
     
         float get_fov( void ) const;
 

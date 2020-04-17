@@ -12,15 +12,14 @@ int main(int argc, char* argv[]) {
     Player player;
     size_t cube_size = grid.get_cube_size();
 
-    player.set_point_coord((Eigen::Vector2f() << 2.0 * cube_size, 5.0 * cube_size).finished());
+    player.set_point_coord((Eigen::Vector2f() << 8.0 * cube_size, 5.0 * cube_size).finished());
     if (argc > 1) {
         player.set_direction(PI * atof(argv[1]));
     } else {
         player.set_direction(PI * 0.75);
     }
 
-    float dist = player.cast(player.get_direction(),grid); 
-
+    float dist = std::get<0>(player.cast(player.get_direction(),grid));
     std::cout << "Dist: " << dist << std::endl;
     Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
     std::cout << "endpoint: " << endpoint.transpose() << std::endl;
@@ -35,5 +34,6 @@ int main(int argc, char* argv[]) {
     engine.draw_projection(player, grid);
     engine.write();    
     
+    std::cout << grid.get_map() << std::endl;
     return 0;
 }

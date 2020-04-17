@@ -29,7 +29,9 @@ class Map {
         bool inside_wall(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
         bool inside_wall(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const;
 
-
+    
+        Eigen::Vector3f get_color(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const;
+        Eigen::Vector3f get_color(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
     private:
         
         size_t m_height = 64; // every block is size 64 units across

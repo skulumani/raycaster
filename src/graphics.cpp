@@ -11,7 +11,7 @@
 
 Renderer::Renderer( void ) {
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
-    m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 1, 1, 1).finished());
+    m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 0, 0, 0).finished());
 }
 
 void Renderer::gradient( void ) {
@@ -76,8 +76,9 @@ void Renderer::draw_map(const Map& input_map) {
             // loop over each pixel in the framebuffer and compute grid location
             grid_coord = input_map.point2grid(point_coord);
             // if inside grid point then draw special color, if not then do nothing
-            if (input_map.inside_wall(grid_coord) ) {
-                m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << 0, 1, 1).finished();
+            if (input_map.inside_wall(grid_coord)) {
+                m_framebuffer[ii+jj*m_width] = input_map.get_color(grid_coord);
+                /* m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << 0, 1, 1).finished(); */
             } 
         }
     }
@@ -143,11 +144,11 @@ void Renderer::draw_fov(const Player& player, const Map& input_map) {
     float fov = player.get_fov();
 
     #pragma omp parallel for
-    for (size_t ii=0;ii<m_width;ii+=20) {
+    for (size_t ii=0;ii<m_width;ii+=1) {
         // loop over FOV and cast a ray in each direction
         float angle = player.get_direction() - fov/2.0 +  fov * ii / float(m_width);
         angle = player.wrap_angle(angle);
-        float dist = player.cast(angle, input_map);
+        float dist = std::get<0>(player.cast(angle, input_map));
         Eigen::Vector2f endpoint = player.cast_endpoint(dist, angle);
         // draw line for each cast
         draw_line(player.get_point_coord(), endpoint, input_map);
@@ -167,7 +168,16 @@ void Renderer::draw_projection(const Player& player, const Map& input_map) {
         angle = player.wrap_angle(angle);
         float beta = player.get_direction() - angle;
         // for each get the distance to wall
-        float dist = player.cast(angle, input_map) * std::cos(beta);
+        auto cast_out = player.cast(angle, input_map);
+        float dist = std::get<0>(cast_out) * std::cos(beta);
+        int side = std::get<1>(cast_out);
+
+        // determine wall that is hit for color
+        Eigen::Vector2f endpoint = player.cast_endpoint(dist / std::cos(beta), angle);
+        Eigen::Vector3f color = input_map.get_color(endpoint); 
+        if (side) {
+            color = color * 1.0/2.0; // scale color for vertical walls
+        }
         // compute height of wall on projection plane
         size_t proj_wall_height = std::ceil(float(cube_size) / dist * player.get_projection_dist());
         // set the appropriate pixels in pp_framebuffer to a color
@@ -178,7 +188,7 @@ void Renderer::draw_projection(const Player& player, const Map& input_map) {
             size_t py = m_pp_height/2-proj_wall_height/2 + jj;
             // make sure px,py lie in the framebuffer
             if ( px < m_pp_width && py < m_pp_height) {
-                m_pp_framebuffer[px + py*m_pp_width] = (Eigen::Vector3f() << 0.5, 0.5, 0.5).finished();
+                m_pp_framebuffer[px + py*m_pp_width] = color;
             }
         }
 

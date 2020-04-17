@@ -5,6 +5,7 @@
 #include <limits>
 #include <cmath>
 #include <iostream>
+#include <tuple>
 
 Player::Player( void ) {
     init();
@@ -73,12 +74,13 @@ float Player::cast_vertical(const float& direction, const Map& input_map) const 
     return (m_point_coord - wall_int).norm();
 }
 
-float Player::cast(const float& direction, const Map& input_map) const {
+std::tuple<float, int> Player::cast(const float& direction, const Map& input_map) const {
 
     float h_dist = cast_horizontal(wrap_angle(direction), input_map);
     float v_dist = cast_vertical(wrap_angle(direction), input_map);
     
-    return std::min(h_dist, v_dist);
+    int side = (h_dist < v_dist) ? 0 : 1;
+    return std::make_tuple(std::min(h_dist, v_dist), side);
 }
 
 Eigen::Vector2f Player::find_wall(const Map& input_map, const Eigen::Ref<const Eigen::Vector2f>& grid_pos, const float& delta_x, const float& delta_y) const {
