@@ -108,3 +108,15 @@ Eigen::Vector2f Player::cast_endpoint(const float& dist, const float& direction)
 float Player::get_fov( void ) const {
     return m_fov;
 }
+
+Eigen::Vector2i Player::get_projection_plane( void ) const {
+    return projection_plane;
+}
+
+float Player::get_angle_step( void ) const {
+    return angle_step;
+}
+
+float Player::get_projection_dist( void ) const {
+    return projection_dist;
+}

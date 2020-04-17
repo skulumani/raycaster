@@ -11,7 +11,8 @@
 
 Renderer::Renderer( void ) {
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
-};
+    m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 1, 1, 1).finished());
+}
 
 void Renderer::gradient( void ) {
     // loop over pixels in the frame buffer
@@ -36,7 +37,7 @@ void Renderer::constant(const Eigen::Ref<const Eigen::Vector3f>& input_color) {
 void Renderer::write( void ) {
     
     // now saving to file
-    std::uint8_t image[m_height * m_width * 3];
+    std::uint8_t image[m_framebuffer.size() * 3];
     #pragma omp parallel for
     for (size_t ii = 0; ii < m_width * m_height; ii++) {
         image[ii * 3 + 0] = (int)(255 * m_framebuffer[ii](0));
@@ -44,7 +45,18 @@ void Renderer::write( void ) {
         image[ii * 3 + 2] = (int)(255 * m_framebuffer[ii](2));
     }
 
-    stbi_write_jpg("out.jpg", m_width, m_height, 3, image, 95);
+    stbi_write_jpg("map.jpg", m_width, m_height, 3, image, 95);
+
+    // now saving to file
+    std::uint8_t image_pp[m_pp_framebuffer.size() * 3];
+    #pragma omp parallel for
+    for (size_t ii = 0; ii < m_pp_framebuffer.size(); ii++) {
+        image_pp[ii * 3 + 0] = (int)(255 * m_pp_framebuffer[ii](0));
+        image_pp[ii * 3 + 1] = (int)(255 * m_pp_framebuffer[ii](1));
+        image_pp[ii * 3 + 2] = (int)(255 * m_pp_framebuffer[ii](2));
+    }
+
+    stbi_write_jpg("proj.jpg", m_pp_width, m_pp_height, 3, image_pp, 95);
 }
 
 
@@ -139,5 +151,36 @@ void Renderer::draw_fov(const Player& player, const Map& input_map) {
         Eigen::Vector2f endpoint = player.cast_endpoint(dist, angle);
         // draw line for each cast
         draw_line(player.get_point_coord(), endpoint, input_map);
+    }
+}
+
+
+void Renderer::draw_projection(const Player& player, const Map& input_map) {
+    // initialize the projection framebuffer
+    float fov = player.get_fov();
+    size_t cube_size = input_map.get_cube_size();
+    
+    // cast over the field of view
+    /* #pragma omp parallel for */
+    for (size_t ii=0;ii<m_pp_width;ii++) {
+        float angle = player.get_direction() - fov/2.0 + ii * player.get_angle_step();
+        angle = player.wrap_angle(angle);
+        float beta = player.get_direction() - angle;
+        // for each get the distance to wall
+        float dist = player.cast(angle, input_map) * std::cos(beta);
+        // compute height of wall on projection plane
+        size_t proj_wall_height = std::ceil(float(cube_size) / dist * player.get_projection_dist());
+        // set the appropriate pixels in pp_framebuffer to a color
+        // get the pixel extents of the player marker
+        /* #pragma omp parallel for */
+        for (size_t jj = 0; jj < proj_wall_height; jj++) {
+            size_t px =  ii;
+            size_t py = m_pp_height/2-proj_wall_height/2 + jj;
+            // make sure px,py lie in the framebuffer
+            if ( px < m_pp_width && py < m_pp_height) {
+                m_pp_framebuffer[px + py*m_pp_width] = (Eigen::Vector3f() << 0.5, 0.5, 0.5).finished();
+            }
+        }
+
     }
 }

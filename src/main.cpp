@@ -29,8 +29,8 @@ int main(int argc, char* argv[]) {
     engine.draw_player(player, grid);
     engine.draw_point(grid, endpoint);
     /* engine.draw_line(player.get_point_coord(), endpoint, grid); */
-    // draw wall intersection point
     engine.draw_fov(player, grid); 
+    engine.draw_projection(player, grid);
     engine.write();    
     
     return 0;

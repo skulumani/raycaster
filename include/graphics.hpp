@@ -42,11 +42,20 @@ class Renderer {
                        const Map& input_map);
     
         void draw_fov(const Player& player, const Map& input_map);
+
+        void draw_projection(const Player& player, const Map& input_map);
     private:
+        // this is for the minimap
         int m_width = 512;
         int m_height = 512;
-    
+        
+        // minimap
         std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_framebuffer;
+
+        // projection plane framebuffer
+        size_t m_pp_width = 640;
+        size_t m_pp_height = 480;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_pp_framebuffer;
 
 };
 
