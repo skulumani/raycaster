@@ -10,7 +10,8 @@ class Map {
         virtual ~Map( void ) {};
         
         void init( void );
-
+        
+        void fill(const size_t& x, const size_t& y, const size_t& val);
         // Map defined with x,y coord. Origin is top left of map
         Eigen::MatrixXi get_map( void ) const;
         
@@ -27,6 +28,8 @@ class Map {
         // check if grid/point is within a wall or is filled
         bool inside_wall(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
         bool inside_wall(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const;
+
+
     private:
         
         size_t m_height = 64; // every block is size 64 units across

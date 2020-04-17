@@ -22,6 +22,10 @@ void Map::init( void ) {
     /* m_map(1, 5) = 1; */
 }
 
+void Map::fill(const size_t& x, const size_t& y, const size_t& val) {
+    m_map(x, y) = val;
+}
+
 Eigen::MatrixXi Map::get_map( void ) const {
     return m_map;
 }
