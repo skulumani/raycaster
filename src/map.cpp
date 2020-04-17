@@ -22,8 +22,10 @@ void Map::init( void ) {
     m_map.col(m_map.cols()-1) = Eigen::VectorXi::Constant(m_size, 1);
 
     // define interior
-    m_map.block<5, 1>(1, 7) = Eigen::VectorXi::Constant(5, 1);
+    // <p, q> - size of block (i, j) - start location in map
+    m_map.block<5, 1>(1, 9) = Eigen::VectorXi::Constant(5, 1);
     m_map.block<1, 5>(10, 1) = Eigen::VectorXi::Constant(5,1);
+    m_map.block<1, 4>(6, 10) = Eigen::VectorXi::Constant(4,2);
     /* m_map.transposeInPlace(); */
 }
 
