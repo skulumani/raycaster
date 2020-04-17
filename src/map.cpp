@@ -11,6 +11,9 @@ Map::Map(size_t map_size) {
 
 void Map::init( void ) {
     // initialize the map
+    size_t rows = m_map.rows();
+    size_t cols = m_map.cols();
+
     m_map.setZero(m_size, m_size);
     m_map.row(0) = Eigen::VectorXi::Constant(m_size, 1);
     m_map.row(m_map.rows()-1) = Eigen::VectorXi::Constant(m_size, 1);
@@ -19,7 +22,9 @@ void Map::init( void ) {
     m_map.col(m_map.cols()-1) = Eigen::VectorXi::Constant(m_size, 1);
 
     // define interior
-    /* m_map(1, 5) = 1; */
+    m_map.block<5, 1>(1, 7) = Eigen::VectorXi::Constant(5, 1);
+    m_map.block<1, 5>(10, 1) = Eigen::VectorXi::Constant(5,1);
+    /* m_map.transposeInPlace(); */
 }
 
 void Map::fill(const size_t& x, const size_t& y, const size_t& val) {

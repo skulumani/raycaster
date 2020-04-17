@@ -8,7 +8,7 @@
 * [ ] Different colors of cubes in map
 * [ ] draw floors and ceilings
 * [ ] [texture mapping](https://lodev.org/cgtutor/raycasting.html)
-*
+* [ ] Shade wall colors based on h_dist or v_dist
 # References
 
 * https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html

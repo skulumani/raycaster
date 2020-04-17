@@ -11,9 +11,9 @@ TEST(TestMap, MapSizeDefault) {
 }
 
 TEST(TestMap, MapSize) {
-    Map grid(8);
+    Map grid(32);
     size_t map_size = grid.get_map_size();
-    ASSERT_EQ(map_size, 8);
+    ASSERT_EQ(map_size, 32);
 }
 
 TEST(TestMap, Point2GridOrigin) {
