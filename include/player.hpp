@@ -21,17 +21,18 @@ class Player {
 
         float get_direction( void ) const;
         void set_direction(const float& input_angle);
+        float wrap_angle(const float& input_angle) const;
 
-        float cast(const float& direction, const Map& input_map);
+        float cast(const float& direction, const Map& input_map) const;
     
         float get_fov( void ) const;
 
         Eigen::Vector2f find_wall(const Map& input_map, 
                 const Eigen::Ref<const Eigen::Vector2f>& grid_pos,
-                const float& delta_x, const float& delta_y);
+                const float& delta_x, const float& delta_y) const;
     
         // return a point at dist in direction of m_direction from m_point_coord
-        Eigen::Vector2f cast_endpoint(const float& dist);
+        Eigen::Vector2f cast_endpoint(const float& dist, const float& direction) const;
 
     private:
     
@@ -42,8 +43,8 @@ class Player {
         float m_height = 32;
         float m_fov = 60 * PI/180.0;
 
-        float cast_horizontal(const float& direction, const Map& input_map);
-        float cast_vertical(const float& direction, const Map& input_map);
+        float cast_horizontal(const float& direction, const Map& input_map) const;
+        float cast_vertical(const float& direction, const Map& input_map) const;
 
         /* size_t image_width = 320; */
         /* size_t image_height = 200; */

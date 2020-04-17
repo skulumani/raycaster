@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <algorithm>
+#include <iostream>
 
 Renderer::Renderer( void ) {
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
@@ -117,7 +118,7 @@ void Renderer::draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
     Eigen::Vector2i pixel_coord;
     
     #pragma omp parallel for
-    for (float d = 0; d < (start_point - end_point).norm(); d+=0.1) {
+    for (float d = 0; d < (start_point - end_point).norm(); d+=1) {
         // compute pixel location on line
         point_coord = start_point + d * unit_vec;
         pixel_coord << point_coord(1)*map2pixel, point_coord(0)*map2pixel;
@@ -128,11 +129,14 @@ void Renderer::draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
 
 void Renderer::draw_fov(const Player& player, const Map& input_map) {
     float fov = player.get_fov();
-    for (size_t ii=0;ii<m_width;ii++) {
+
+    #pragma omp parallel for
+    for (size_t ii=0;ii<m_width;ii+=10) {
         // loop over FOV and cast a ray in each direction
         float angle = player.get_direction() - fov/2.0 +  fov * ii / float(m_width);
+        angle = player.wrap_angle(angle);
         float dist = player.cast(angle, input_map);
-        Eigen::Vector2f endpoint = player.cast_endpoint(dist);
+        Eigen::Vector2f endpoint = player.cast_endpoint(dist, angle);
         // draw line for each cast
         draw_line(player.get_point_coord(), endpoint, input_map);
     }

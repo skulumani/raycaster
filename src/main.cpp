@@ -4,19 +4,23 @@
 
 #include <iostream> 
 
-int main() {
+int main(int argc, char* argv[]) {
     Renderer engine;
     Map grid(16);
     Player player;
     size_t cube_size = grid.get_cube_size();
 
-    player.set_point_coord((Eigen::Vector2f() << 3.0/2 * cube_size, 3.0/2 * cube_size).finished());
-    player.set_direction(0.25*PI);
+    player.set_point_coord((Eigen::Vector2f() << grid.get_map_size()/2.0 * cube_size, grid.get_map_size()/2.0 * cube_size).finished());
+    if (argc > 1) {
+        player.set_direction(PI * atof(argv[1]));
+    } else {
+        player.set_direction(PI * 0.75);
+    }
 
     float dist = player.cast(player.get_direction(),grid); 
 
     std::cout << "Dist: " << dist << std::endl;
-    Eigen::Vector2f endpoint = player.cast_endpoint(dist);
+    Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
     std::cout << "endpoint: " << endpoint.transpose() << std::endl;
 
     /* engine.gradient(); */
@@ -24,9 +28,9 @@ int main() {
     engine.draw_map(grid);
     engine.draw_player(player, grid);
     engine.draw_point(grid, endpoint);
-    engine.draw_line(player.get_point_coord(), endpoint, grid);
+    /* engine.draw_line(player.get_point_coord(), endpoint, grid); */
     // draw wall intersection point
-    
+    engine.draw_fov(player, grid); 
     engine.write();    
     
     return 0;

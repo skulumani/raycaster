@@ -27,23 +27,26 @@ void Player::set_point_coord(const Eigen::Ref<const Eigen::Vector2f>& input_coor
 }
 
 void Player::set_direction(const float& input_angle) {
-    m_direction = std::fmod(input_angle, (2 * PI)); // in radians
-    m_direction = (m_direction < 0) ? m_direction + 2*PI : m_direction;
+    m_direction = wrap_angle(input_angle);
 }
 
+float Player::wrap_angle(const float& input_angle) const {
+    float output_angle = std::fmod(input_angle, (2*PI));
+    return (output_angle < 0) ? output_angle + 2*PI : output_angle;
+}
 // finds nearest horizontal wall intersection
-float Player::cast_horizontal(const float& direction, const Map& input_map) {
+float Player::cast_horizontal(const float& direction, const Map& input_map) const {
     // check if looking upwards or downwards
-    bool up = (direction > PI);
+    bool up = (direction > PI) ||  (direction < 0);
     bool right = (direction < PI/2.0) || (direction > 3/4 * PI); 
      
     // find nearest grid intersection
     float intersection_y = std::floor(m_point_coord(1) / input_map.get_cube_size()) * input_map.get_cube_size() + (up ? -0.001 : input_map.get_cube_size());
-    float intersection_x = m_point_coord(0) + (intersection_y - m_point_coord(1)) / std::tan(m_direction);
+    float intersection_x = m_point_coord(0) - (intersection_y - m_point_coord(1)) / std::tan(direction);
     Eigen::Vector2f grid_int(intersection_x, intersection_y);
    
     // calculate deltas to get the next grid intersections
-    float delta_y = up ? -input_map.get_cube_size() : input_map.get_cube_size();
+    float delta_y = up ? -float(input_map.get_cube_size()) : float(input_map.get_cube_size());
     float delta_x = std::abs(input_map.get_cube_size() / std::tan(direction)) * (right ? 1 : -1);
     // return nearest horizontal wall
     Eigen::Vector2f wall_int = find_wall(input_map, grid_int, delta_x, delta_y);
@@ -51,18 +54,18 @@ float Player::cast_horizontal(const float& direction, const Map& input_map) {
 }
 
 // finds the closest vertical wall intersection
-float Player::cast_vertical(const float& direction, const Map& input_map) {
+float Player::cast_vertical(const float& direction, const Map& input_map) const {
     // check if looking upwards or downwards
     bool up = (direction > PI);
     bool right = (direction < PI/2.0) || (direction > 3.0/2.0 * PI); 
     
     // find nearest grid intersection
     float intersection_x = std::floor(m_point_coord(0) / input_map.get_cube_size()) * input_map.get_cube_size() + (right ? input_map.get_cube_size() : -0.001);
-    float intersection_y = m_point_coord(1) + (intersection_x - m_point_coord(0)) * std::tan(m_direction);
+    float intersection_y = m_point_coord(1) + (intersection_x - m_point_coord(0)) * std::tan(direction);
     Eigen::Vector2f grid_int(intersection_x, intersection_y);
     
     // calculate deltas to get the next grid intersections
-    float delta_x = right ? input_map.get_cube_size() : -input_map.get_cube_size();
+    float delta_x = right ? float(input_map.get_cube_size()) : -float(input_map.get_cube_size());
     float delta_y = std::abs(input_map.get_cube_size() * std::tan(direction)) * (up ? -1 : 1);
     
     // recursively find wall in vertical direction
@@ -70,14 +73,15 @@ float Player::cast_vertical(const float& direction, const Map& input_map) {
     return (m_point_coord - wall_int).norm();
 }
 
-float Player::cast(const float& direction, const Map& input_map) {
-    float h_dist = cast_horizontal(direction, input_map);
-    float v_dist = cast_vertical(direction, input_map);
+float Player::cast(const float& direction, const Map& input_map) const {
+
+    float h_dist = cast_horizontal(wrap_angle(direction), input_map);
+    float v_dist = cast_vertical(wrap_angle(direction), input_map);
     
-    return  std::min(h_dist, v_dist);
+    return std::min(h_dist, v_dist);
 }
 
-Eigen::Vector2f Player::find_wall(const Map& input_map, const Eigen::Ref<const Eigen::Vector2f>& grid_pos, const float& delta_x, const float& delta_y) {
+Eigen::Vector2f Player::find_wall(const Map& input_map, const Eigen::Ref<const Eigen::Vector2f>& grid_pos, const float& delta_x, const float& delta_y) const {
     // recursive function to loop and check grid intersections for walls
 
     // return infinity position if not within map
@@ -94,10 +98,10 @@ Eigen::Vector2f Player::find_wall(const Map& input_map, const Eigen::Ref<const E
     return find_wall(input_map, new_pos, delta_x, delta_y);
 }
 
-Eigen::Vector2f Player::cast_endpoint(const float& dist) {
+Eigen::Vector2f Player::cast_endpoint(const float& dist, const float& direction) const {
     // compute end point given distance and angle
     Eigen::Vector2f endpoint;
-    endpoint = m_point_coord + dist * (Eigen::Vector2f() << std::cos(m_direction), std::sin(m_direction)).finished();
+    endpoint = m_point_coord + dist * (Eigen::Vector2f() << std::cos(direction), std::sin(direction)).finished();
     return endpoint;
 }
 
