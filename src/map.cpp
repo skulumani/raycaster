@@ -3,7 +3,7 @@
 #include <Eigen/Dense> 
 
 #include <iostream>
-
+#include <cmath>
 
 Map::Map( void ) {
     init();
@@ -35,9 +35,11 @@ void Map::init( void ) {
 
     // define interior
     // <p, q> - size of block (i, j) - start location in map
-    m_map.block<5, 1>(1, 9) = Eigen::VectorXi::Constant(5, 1);
-    m_map.block<1, 5>(10, 1) = Eigen::VectorXi::Constant(5,1);
-    m_map.block<1, 4>(6, 10) = Eigen::VectorXi::Constant(4,2);
+    /* m_map.block<5, 1>(1, 9) = Eigen::VectorXi::Constant(5, 1); */
+    /* m_map(1, 4) = 3; */
+    /* m_map.block<1, 5>(10, 1) = Eigen::VectorXi::Constant(5,1); */
+    /* m_map(10, 3) = 3; */
+    /* m_map.block<1, 4>(6, 10) = Eigen::VectorXi::Constant(4,2); */
     /* m_map.transposeInPlace(); */
 
     /* for (size_t ii=0; ii<rows; ii+=2) { */
@@ -62,13 +64,13 @@ size_t Map::get_cube_size( void ) const {
 }
 
 Eigen::Vector2i Map::point2grid(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const {
-    Eigen::Vector2i grid_coord(int(point_coord(0)) / m_height, int(point_coord(1)) / m_height);
+    Eigen::Vector2i grid_coord(std::floor(point_coord(0) / m_height), std::floor(point_coord(1) / m_height));
     return grid_coord ;
 }
 
 Eigen::Vector2f Map::grid2point(const Eigen::Ref<const  Eigen::Vector2i>& grid_coord) const {
     Eigen::Vector2f point_coord(grid_coord(0), grid_coord(1));
-    /* m_height; // returns bottom left coord of cube */
+    /* m_height; // returns top left coord of cube */
     return point_coord * m_height;
 }
 

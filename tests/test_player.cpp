@@ -55,6 +55,17 @@ TEST(TestPlayer, HorizontalCastOutsideWallNeg45Deg) {
     ASSERT_NEAR(h_dist, cube_size/2 * std::sqrt(2), 1e-1);
 }
 
+TEST(TestPlayer, HorizontalCastOutsideWallDownFar) {
+    Map grid(128);
+    Player player;
+    size_t cube_size = grid.get_cube_size();
+    player.set_point_coord((Eigen::Vector2f() << cube_size + cube_size/2, cube_size + cube_size/2).finished());
+    player.set_direction(0.5*PI);
+    float h_dist = std::get<0>(player.cast(player.get_direction(),grid));
+    std::cout << h_dist << std::endl;
+    ASSERT_NEAR(h_dist, grid.get_map_size() * cube_size - 2.5*cube_size, 1e-1);
+}
+
 TEST(TestPlayer, VerticalCastInsideWallRight) {
     Map grid(16);
     Player player;

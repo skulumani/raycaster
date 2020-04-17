@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <vector>
-
+#include <string>
 
 
 class Renderer {
@@ -24,7 +24,7 @@ class Renderer {
         void constant(const Eigen::Ref<const Eigen::Vector3f>& input_color);
 
         void write( void );
-
+        void write(const std::string& filename);
         // input the map/grid and draw a solid color for each cube
         void draw_map(const Map& input_map); 
         // given a location coord draw a pixel

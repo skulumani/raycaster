@@ -53,6 +53,13 @@ add_executable(main
     src/map.cpp
     src/player.cpp
 )
+
+add_executable(rotate 
+    src/rotate.cpp 
+    src/graphics.cpp
+    src/map.cpp
+    src/player.cpp
+)
 # target_link_libraries(main
 ################################################################################
 # Testing example
