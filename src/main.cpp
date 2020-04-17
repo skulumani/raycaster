@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
     Player player;
     size_t cube_size = grid.get_cube_size();
 
-    player.set_point_coord((Eigen::Vector2f() << grid.get_map_size()/2.0 * cube_size, grid.get_map_size()/2.0 * cube_size).finished());
+    player.set_point_coord((Eigen::Vector2f() << 2.0 * cube_size, 5.0 * cube_size).finished());
     if (argc > 1) {
         player.set_direction(PI * atof(argv[1]));
     } else {

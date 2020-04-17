@@ -161,7 +161,7 @@ void Renderer::draw_projection(const Player& player, const Map& input_map) {
     size_t cube_size = input_map.get_cube_size();
     
     // cast over the field of view
-    /* #pragma omp parallel for */
+    #pragma omp parallel for
     for (size_t ii=0;ii<m_pp_width;ii++) {
         float angle = player.get_direction() - fov/2.0 + ii * player.get_angle_step();
         angle = player.wrap_angle(angle);
