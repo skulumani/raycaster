@@ -131,7 +131,7 @@ void Renderer::draw_fov(const Player& player, const Map& input_map) {
     float fov = player.get_fov();
 
     #pragma omp parallel for
-    for (size_t ii=0;ii<m_width;ii+=10) {
+    for (size_t ii=0;ii<m_width;ii+=20) {
         // loop over FOV and cast a ray in each direction
         float angle = player.get_direction() - fov/2.0 +  fov * ii / float(m_width);
         angle = player.wrap_angle(angle);
