@@ -4,7 +4,11 @@
 * [ ] Setup KB inputs using GLFW
 * [ ] Link to teensy for attitude
 * [ ] Procedural generation of a random 2D map with walls/obstacles
-
+* [ ] Method to add blocks to map
+* [ ] Different colors of cubes in map
+* [ ] draw floors and ceilings
+* [ ] texture mapping
+*
 # References
 
 * https://cliutils.gitlab.io/modern-cmake/chapters/basics/structure.html
