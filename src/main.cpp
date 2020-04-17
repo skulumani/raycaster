@@ -7,6 +7,8 @@
 int main(int argc, char* argv[]) {
     Renderer engine;
     Map grid(16);
+    // set some blocks up
+    //
     Player player;
     size_t cube_size = grid.get_cube_size();
 
