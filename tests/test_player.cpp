@@ -53,7 +53,7 @@ TEST(TestPlayer, HorizontalCastOutsideWallNeg45Deg) {
     player.set_point_coord((Eigen::Vector2f() << cube_size + cube_size/2, cube_size + cube_size/2).finished());
     player.set_direction(3.0/2*PI - 1.0/4 * PI);
     float h_dist = std::get<0>(player.cast(player.get_direction(),grid));
-    ASSERT_NEAR(h_dist, cube_size/2 * std::sqrt(2), 1e-1);
+    ASSERT_GT(h_dist, cube_size/2 * std::sqrt(2));
 }
 
 TEST(TestPlayer, HorizontalCastOutsideWallDownFar) {
@@ -110,8 +110,7 @@ TEST(TestPlayer, CastRightSemiCircle) {
         player.set_direction(direction);
         float dist = std::get<0>(player.cast(player.get_direction(),grid));
         Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
-        
-        EXPECT_NEAR(endpoint(0), cube_size * (map_size - 1) , 1e-3);
+        EXPECT_GE(endpoint(0), cube_size * (map_size - 1));
     }
 }
 
@@ -128,8 +127,7 @@ TEST(TestPlayer, CastDownSemiCircle) {
         player.set_direction(direction);
         float dist = std::get<0>(player.cast(player.get_direction(),grid));
         Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
-        
-        EXPECT_NEAR(endpoint(1), cube_size * (map_size - 1) , 1e-3);
+        EXPECT_GE(endpoint(1) , cube_size * (map_size - 1));
     }
 }
 
@@ -146,8 +144,7 @@ TEST(TestPlayer, CastLeftSemiCircle) {
         player.set_direction(direction);
         float dist = std::get<0>(player.cast(player.get_direction(),grid));
         Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
-        
-        EXPECT_NEAR(endpoint(0), cube_size, 1e-3);
+        EXPECT_LT(endpoint(0), cube_size);
     }
 }
 
@@ -165,6 +162,6 @@ TEST(TestPlayer, CastUpSemiCircle) {
         float dist = std::get<0>(player.cast(player.get_direction(),grid));
         Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
         
-        EXPECT_NEAR(endpoint(1), cube_size, 1e-3);
+        EXPECT_LT(endpoint(1),  cube_size);
     }
 }

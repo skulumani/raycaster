@@ -36,33 +36,28 @@ float Player::wrap_angle(const float& input_angle) const {
     return (output_angle < 0) ? output_angle + 2*PI : output_angle;
 }
 // finds nearest horizontal wall intersection
-float Player::cast_horizontal(const float& direction, const Map& input_map) const {
-    // check if looking upwards or downwards
-    bool up = (direction > PI) && direction < 2 * PI;
-    bool right = (direction < PI/2.0) || (direction > 3.0/2.0 * PI); 
-     
+float Player::cast_horizontal(const float& direction, const Map& input_map,
+                              const bool& up, const bool& right) const {
     // find nearest grid intersection
-    float intersection_y = std::floor(m_point_coord(1) / input_map.get_cube_size()) * input_map.get_cube_size() + (up ? -0.001 : input_map.get_cube_size());
-    float intersection_x = m_point_coord(0) + (m_point_coord(1) - intersection_y) / std::tan(direction);
+    float intersection_y = std::floor(m_point_coord(1) / input_map.get_cube_size()) * input_map.get_cube_size() + (up ? -0.1 : input_map.get_cube_size());
+    float intersection_x = m_point_coord(0) + std::abs(m_point_coord(1) - intersection_y) / std::tan(direction) * ( right ? 1.0 : -1.0);
     Eigen::Vector2f grid_int(intersection_x, intersection_y);
    
     // calculate deltas to get the next grid intersections
     float delta_y = up ? -float(input_map.get_cube_size()) : float(input_map.get_cube_size());
-    float delta_x = std::abs(input_map.get_cube_size() / std::tan(direction)) * (right ? 1.0 : -1.0);
+    float delta_x = input_map.get_cube_size() / std::tan(direction) * (right ? 1.0 : -1.0);
     // return nearest horizontal wall
     Eigen::Vector2f wall_int = find_wall(input_map, grid_int, delta_x, delta_y);
     return (m_point_coord - wall_int).norm();
 }
 
 // finds the closest vertical wall intersection
-float Player::cast_vertical(const float& direction, const Map& input_map) const {
-    // check if looking upwards or downwards
-    bool up = (direction > PI) && (direction < 2.0 * PI);
-    bool right = (direction < PI/2.0) || (direction > 3.0/2.0 * PI); 
+float Player::cast_vertical(const float& direction, const Map& input_map,
+                            const bool& up, const bool& right) const {
     
     // find nearest grid intersection
-    float intersection_x = std::floor(m_point_coord(0) / input_map.get_cube_size()) * input_map.get_cube_size() + (right ? input_map.get_cube_size() : -0.001);
-    float intersection_y = m_point_coord(1) - (m_point_coord(0) - intersection_x) * std::tan(direction);
+    float intersection_x = std::floor(m_point_coord(0) / input_map.get_cube_size()) * input_map.get_cube_size() + (right ? input_map.get_cube_size() : -0.1);
+    float intersection_y = m_point_coord(1) + std::abs(m_point_coord(0) - intersection_x) * std::tan(direction) * (up ? -1.0: 1.0);
     Eigen::Vector2f grid_int(intersection_x, intersection_y);
     
     // calculate deltas to get the next grid intersections
@@ -76,8 +71,32 @@ float Player::cast_vertical(const float& direction, const Map& input_map) const 
 
 std::tuple<float, int> Player::cast(const float& direction, const Map& input_map) const {
 
-    float h_dist = cast_horizontal(wrap_angle(direction), input_map);
-    float v_dist = cast_vertical(wrap_angle(direction), input_map);
+    bool up = (direction > PI) && (direction < 2.0 * PI);
+    bool right = (direction < PI/2.0) || (direction > 3.0/2.0 * PI); 
+
+    // check if looking upwards or downwards
+    // change angle based on up/right booleans
+    float angle = direction;
+    if (up) {
+        if (right) {
+            // up and right
+             angle = 2.0 * PI - wrap_angle(direction);
+        } else {
+            // up and left
+             angle = wrap_angle(direction) - PI;
+        }
+    } else {
+        if (right) {
+            // down and right
+             angle = wrap_angle(direction);
+        } else {
+            // down and left
+             angle = PI - wrap_angle(direction);
+        }
+    }
+    
+    float h_dist = cast_horizontal(angle, input_map, up, right);
+    float v_dist = cast_vertical(angle, input_map, up, right);
     
     int side = (h_dist < v_dist) ? 0 : 1;
     return std::make_tuple(std::min(h_dist, v_dist), side);
@@ -103,8 +122,8 @@ Eigen::Vector2f Player::find_wall(const Map& input_map, const Eigen::Ref<const E
 Eigen::Vector2f Player::cast_endpoint(const float& dist, const float& direction) const {
     // compute end point given distance and angle
     Eigen::Vector2f endpoint;
-    endpoint = m_point_coord + dist * (Eigen::Vector2f() << std::cos(direction), std::sin(direction)).finished();
-    return endpoint.array().round();
+    endpoint = m_point_coord + (dist + 0.01)  * (Eigen::Vector2f() << std::cos(direction), std::sin(direction)).finished();
+    return endpoint;
 }
 
 float Player::get_fov( void ) const {

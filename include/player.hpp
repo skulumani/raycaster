@@ -48,8 +48,10 @@ class Player {
         float m_height = 32; // always half height of cube_size in map
         float m_fov = 60 * PI/180.0;
 
-        float cast_horizontal(const float& direction, const Map& input_map) const;
-        float cast_vertical(const float& direction, const Map& input_map) const;
+        float cast_horizontal(const float& direction, const Map& input_map,
+                              const bool& up, const bool& right) const;
+        float cast_vertical(const float& direction, const Map& input_map,
+                            const bool& up, const bool& right) const;
 
         Eigen::Vector2i projection_plane{ 640, 480 };
 
