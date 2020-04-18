@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
         engine.draw_projection(player, grid);
         std::ostringstream os;
         os << ii << "_rotate_";
-        /* engine.write(os.str()); */    
+        engine.write(os.str());    
     }
 
     return 0;

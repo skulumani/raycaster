@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Dist: " << dist << std::endl;
     Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
     std::cout << "endpoint: " << endpoint.transpose() << std::endl;
+    std::cout << "gridpoint: " << grid.point2grid(endpoint).transpose() << std::endl;
 
     /* engine.gradient(); */
     engine.constant((Eigen::Vector3f() << 0.5, 0.5, 0.5).finished());

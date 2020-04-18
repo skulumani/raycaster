@@ -4,6 +4,7 @@
 #include "gtest/gtest.h"
 
 #include <cmath>
+#include <iostream> 
 
 TEST(TestPlayer, HorizontalCastInsideWallDown) {
     Map grid(16);
@@ -94,4 +95,76 @@ TEST(TestPlayer, VerticalCastOutsideWallRight) {
     player.set_direction(0);
     float v_dist = std::get<0>(player.cast(player.get_direction(),grid));
     ASSERT_NEAR(v_dist, grid.get_map_size() * cube_size - 2.5 * cube_size, 1e-1);
+}
+
+TEST(TestPlayer, CastRightSemiCircle) {
+    Map grid(32);
+    Player player;
+
+    size_t cube_size = grid.get_cube_size();
+    size_t map_size = grid.get_map_size();
+
+    player.set_point_coord((Eigen::Vector2f() << cube_size * map_size/2, cube_size * map_size / 2).finished());
+    for (int ii=-45;ii<45;ii++) {
+        float direction = ii * PI/180.0 + 0;
+        player.set_direction(direction);
+        float dist = std::get<0>(player.cast(player.get_direction(),grid));
+        Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
+        
+        EXPECT_NEAR(endpoint(0), cube_size * (map_size - 1) , 1e-3);
+    }
+}
+
+TEST(TestPlayer, CastDownSemiCircle) {
+    Map grid(32);
+    Player player;
+
+    size_t cube_size = grid.get_cube_size();
+    size_t map_size = grid.get_map_size();
+
+    player.set_point_coord((Eigen::Vector2f() << cube_size * map_size/2, cube_size * map_size / 2).finished());
+    for (int ii=-45;ii<45;ii++) {
+        float direction = ii * PI/180.0 + 0.5 * PI;
+        player.set_direction(direction);
+        float dist = std::get<0>(player.cast(player.get_direction(),grid));
+        Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
+        
+        EXPECT_NEAR(endpoint(1), cube_size * (map_size - 1) , 1e-3);
+    }
+}
+
+TEST(TestPlayer, CastLeftSemiCircle) {
+    Map grid(32);
+    Player player;
+
+    size_t cube_size = grid.get_cube_size();
+    size_t map_size = grid.get_map_size();
+
+    player.set_point_coord((Eigen::Vector2f() << cube_size * map_size/2, cube_size * map_size / 2).finished());
+    for (int ii=-45;ii<45;ii++) {
+        float direction = ii * PI/180.0 + 1.0 * PI;
+        player.set_direction(direction);
+        float dist = std::get<0>(player.cast(player.get_direction(),grid));
+        Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
+        
+        EXPECT_NEAR(endpoint(0), cube_size, 1e-3);
+    }
+}
+
+TEST(TestPlayer, CastUpSemiCircle) {
+    Map grid(32);
+    Player player;
+
+    size_t cube_size = grid.get_cube_size();
+    size_t map_size = grid.get_map_size();
+
+    player.set_point_coord((Eigen::Vector2f() << cube_size * map_size/2, cube_size * map_size / 2).finished());
+    for (int ii=-45;ii<45;ii++) {
+        float direction = ii * PI/180.0 + 1.5 * PI;
+        player.set_direction(direction);
+        float dist = std::get<0>(player.cast(player.get_direction(),grid));
+        Eigen::Vector2f endpoint = player.cast_endpoint(dist, player.get_direction());
+        
+        EXPECT_NEAR(endpoint(1), cube_size, 1e-3);
+    }
 }
