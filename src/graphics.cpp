@@ -11,10 +11,16 @@
 #include <string> 
 
 Renderer::Renderer( void ) {
+    init();
+}
+
+void Renderer::init( void ) {
+    m_framebuffer.clear();
+    m_pp_framebuffer.clear();
+
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
     m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 0, 0, 0).finished());
 }
-
 void Renderer::gradient( void ) {
     // loop over pixels in the frame buffer
     #pragma omp parallel for
@@ -58,6 +64,8 @@ void Renderer::write( void ) {
     }
 
     stbi_write_jpg("proj.jpg", m_pp_width, m_pp_height, 3, image_pp, 95);
+
+    init();
 }
 
 

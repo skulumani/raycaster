@@ -18,6 +18,7 @@ class Renderer {
         Renderer( void );
         virtual ~Renderer( void ) {};
         
+        void init( void );
         // File framebuffer with a gradient color scheme
         void gradient( void ); 
 
