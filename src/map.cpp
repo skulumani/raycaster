@@ -25,12 +25,14 @@ void Map::init( void ) {
     m_map.row(m_map.rows()-1) = Eigen::VectorXi::Constant(m_size, 1);
     for ( size_t ii=0; ii<cols; ii+=2) {
         m_map(0, ii) = 2;
+        m_map(rows-1, ii) = 2;
     }
-
+    
     m_map.col(0) = Eigen::VectorXi::Constant(m_size, 1);
     m_map.col(m_map.cols()-1) = Eigen::VectorXi::Constant(m_size, 1);
     for ( size_t ii=0; ii<rows; ii+=2) {
         m_map(ii, 0) = 3;
+        m_map(ii, cols-1) = 3;
     }
 
     // define interior

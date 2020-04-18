@@ -93,14 +93,13 @@ void Renderer::draw_map(const Map& input_map) {
     float pixel2map = input_map.get_cube_size() * input_map.get_map_size() * 1.0 / m_height;
     
     Eigen::Vector2f point_coord;
-    Eigen::Vector2i pixel_coord, grid_coord;
+    Eigen::Vector2i grid_coord;
 
     #pragma omp parallel for
     for (size_t jj = 0; jj < m_height; jj++) {
         for (size_t ii = 0; ii < m_width; ii++) {
             // convert from pixel to map units
-            pixel_coord <<  ii, jj;
-            point_coord << ii, jj;
+            point_coord << jj, ii;
             point_coord = point_coord * pixel2map;
             // loop over each pixel in the framebuffer and compute grid location
             grid_coord = input_map.point2grid(point_coord);
@@ -127,23 +126,23 @@ void Renderer::draw_point(const Map& input_map,
     size_t player_half_size = 2; // half size in pixels of marker
     float pixel2map = input_map.get_cube_size() * input_map.get_map_size() * 1.0 / m_height;
     float map2pixel = 1.0 / pixel2map;
-    Eigen::Vector2i pixel_coord(point_coord(1)*map2pixel, point_coord(0)*map2pixel);
+    Eigen::Vector2i pixel_coord(point_coord(0)*map2pixel, point_coord(1)*map2pixel);
 
     // get the pixel extents of the player marker
 
     #pragma omp parallel for
     for (size_t jj = 0; jj < 2*player_half_size+1; jj++) {
         for (size_t ii = 0; ii < 2*player_half_size+1; ii++) {
-            int px =  pixel_coord(0) - player_half_size + jj;
-            int py = pixel_coord(1) - player_half_size + ii;
+            int px =  pixel_coord(0) - player_half_size + ii;
+            int py = pixel_coord(1) - player_half_size + jj;
             // make sure px,py lie in the framebuffer
             if ( px >= 0 && px < m_width && py >= 0 && py < m_height) {
-                m_framebuffer[py + px*m_width] = primary_color;
+                m_framebuffer[px + py*m_width] = primary_color;
             }
         }
     }
 
-    m_framebuffer[pixel_coord(1) + pixel_coord(0) * m_width] = secondary_color;
+    m_framebuffer[pixel_coord(0) + pixel_coord(1) * m_width] = secondary_color;
 
 }
 
@@ -163,9 +162,9 @@ void Renderer::draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
     for (float d = 0; d < (start_point - end_point).norm(); d+=1) {
         // compute pixel location on line
         point_coord = start_point + d * unit_vec;
-        pixel_coord << point_coord(1)*map2pixel, point_coord(0)*map2pixel;
+        pixel_coord << point_coord(0)*map2pixel, point_coord(1)*map2pixel;
 
-        m_framebuffer[pixel_coord(1) + pixel_coord(0)*m_width] = (Eigen::Vector3f() << 1, 1, 1).finished();
+        m_framebuffer[pixel_coord(0) + pixel_coord(1)*m_width] = (Eigen::Vector3f() << 1, 1, 1).finished();
     }
 }
 
