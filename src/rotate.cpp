@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
         std::ostringstream os;
         os << ii << "_rotate_";
         engine.write(os.str());    
+        engine.clear();
     }
 
     return 0;
