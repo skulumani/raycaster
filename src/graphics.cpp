@@ -111,7 +111,7 @@ void Renderer::draw_map(const Map& input_map) {
     for (size_t jj = 0; jj < m_height; jj++) {
         for (size_t ii = 0; ii < m_width; ii++) {
             // convert from pixel to map units
-            point_coord << jj, ii;
+            point_coord << ii, jj;
             point_coord = point_coord * pixel2map;
             // loop over each pixel in the framebuffer and compute grid location
             grid_coord = input_map.point2grid(point_coord);
@@ -141,7 +141,6 @@ void Renderer::draw_point(const Map& input_map,
     Eigen::Vector2i pixel_coord(point_coord(0)*map2pixel, point_coord(1)*map2pixel);
 
     // get the pixel extents of the player marker
-
     #pragma omp parallel for
     for (size_t jj = 0; jj < 2*player_half_size+1; jj++) {
         for (size_t ii = 0; ii < 2*player_half_size+1; ii++) {
@@ -158,6 +157,20 @@ void Renderer::draw_point(const Map& input_map,
 
 }
 
+void Renderer::draw_rectangle(const Eigen::Ref<const Eigen::Vector2i>& upper_left_pixel, 
+                            const Eigen::Ref<const Eigen::Vector2i>& bottom_right_pixel,
+                            const Eigen::Ref<const Eigen::Vector3f>& color) {
+
+    #pragma omp parallel for
+    for (size_t ii=upper_left_pixel(0);ii<bottom_right_pixel(0);ii++) {
+        for (size_t jj = upper_left_pixel(1); jj < bottom_right_pixel(1); jj++) {
+                m_pp_framebuffer[ii + jj*m_pp_width] = color;
+        }
+
+    }
+}
+
+// draws a rectangle on the projection plane
 void Renderer::draw_line(const Eigen::Ref<const Eigen::Vector2f>& start_point,
                          const Eigen::Ref<const Eigen::Vector2f>& end_point,
                          const Map& input_map) {
@@ -233,4 +246,12 @@ void Renderer::draw_projection(const Player& player, const Map& input_map) {
         }
 
     }
+}
+
+Eigen::Vector2i Renderer::get_pp_size( void ) const {
+    return (Eigen::Vector2i() << m_pp_width, m_pp_height).finished();
+}
+
+Eigen::Vector2i Renderer::get_mm_size( void ) const {
+    return (Eigen::Vector2i() << m_width, m_height).finished();
 }

@@ -34,19 +34,19 @@ void Map::init( void ) {
         m_map(ii, 0) = 3;
         m_map(ii, cols-1) = 3;
     }
-
+    
     // define interior
     // <p, q> - size of block (i, j) - start location in map
-    /* m_map.block<5, 1>(1, 9) = Eigen::VectorXi::Constant(5, 1); */
-    /* m_map(1, 4) = 3; */
-    /* m_map.block<1, 5>(10, 1) = Eigen::VectorXi::Constant(5,1); */
-    /* m_map(10, 3) = 3; */
-    /* m_map.block<1, 4>(6, 10) = Eigen::VectorXi::Constant(4,2); */
+    m_map.block<5, 1>(1, 9) = Eigen::VectorXi::Constant(5, 1);
+    m_map(1, 4) = 3;
+    m_map.block<1, 5>(10, 1) = Eigen::VectorXi::Constant(5,1);
+    m_map(10, 3) = 3;
+    m_map.block<1, 4>(6, 10) = Eigen::VectorXi::Constant(4,2);
     /* m_map.transposeInPlace(); */
 
-    /* for (size_t ii=0; ii<rows; ii+=2) { */
-    /*     m_map(ii, cols/2) = 3; */
-    /* } */
+    for (size_t ii=0; ii<rows; ii+=2) {
+        m_map(ii, cols/2) = 3;
+    }
 }
 
 void Map::fill(const size_t& x, const size_t& y, const size_t& val) {
@@ -113,7 +113,7 @@ Eigen::Vector3f Map::get_color(const Eigen::Ref<const Eigen::Vector2i>& grid_coo
         case 1: color << 1, 0, 0; break;// red
         case 2: color << 0, 1, 0; break; // green
         case 3: color << 0, 0, 1; break; // blue
-        case 4: color << 0.5, 0.5, 0.5; break; // cyan
+        case 4: color << 0, 1, 1; break; // cyan
         default: color << 1, 1, 0; break; // yellow
     }
 
