@@ -9,10 +9,10 @@
 * [ ] Procedural generation of a random 2D map with walls/obstacles
 * [x] Method to add blocks to map
 * [x] Different colors of cubes in map
-* [x] draw floors and ceilings
+* [ ] draw floors and ceilings
 * [ ] [texture mapping](https://lodev.org/cgtutor/raycasting.html)
 * [x] Shade wall colors based on h_dist or v_dist
-* [ ] fix reference frame between grid coord, output map, and point coord
+* [x] fix reference frame between grid coord, output map, and point coord
 
 ## Gifs
 
