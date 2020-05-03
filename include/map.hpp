@@ -11,7 +11,11 @@ class Map {
         
         void init( void );
         
+        // dimensions match image - x = cols, y = rows 
         void fill(const size_t& x, const size_t& y, const size_t& val);
+        // randomly set interior to filled/not filled blocks - only after calling init
+        void random( void ); 
+
         // Map defined with x,y coord. Origin is top left of map
         Eigen::MatrixXi get_map( void ) const;
         
