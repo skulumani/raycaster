@@ -25,7 +25,9 @@ class Renderer {
         void constant(const Eigen::Ref<const Eigen::Vector3f>& input_color);
         
         // load the textures into the framebuffers
-        void load_textures( void ); 
+        void load_wall_textures( void ); 
+        bool load_texture(const std::string& filename,
+                          std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> >& texture_framebuffer );
 
         void write( void );
         void write(const std::string& filename);

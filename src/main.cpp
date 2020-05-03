@@ -30,7 +30,6 @@ int main(int argc, char* argv[]) {
 
     /* engine.gradient(); */
     engine.constant((Eigen::Vector3f() << 0.5, 0.5, 0.5).finished());
-    engine.load_textures();
     // draw projection plane ceiling
     engine.draw_rectangle((Eigen::Vector2i() << 0, 0).finished(), (Eigen::Vector2i() << pp_size(0), pp_size(1)/2).finished());
 

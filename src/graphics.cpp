@@ -14,6 +14,8 @@
 
 Renderer::Renderer( void ) {
     init();
+    // load wall textures
+    load_wall_textures();
 }
 
 void Renderer::init( void ) {
@@ -22,6 +24,7 @@ void Renderer::init( void ) {
 
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
     m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 0, 0, 0).finished());
+
 }
 
 void Renderer::clear( void ) {
@@ -38,32 +41,44 @@ void Renderer::gradient( void ) {
     }
 }
 
-void Renderer::load_textures( void ) {
+void Renderer::load_wall_textures( void ) {
+    // load all the wall textures
+    load_texture("data/redbrick.png", m_redbrick_framebuffer);
+    load_texture("data/wood.png", m_wood_framebuffer);
+    load_texture("data/bluestone.png", m_bluestone_framebuffer);
+    load_texture("data/greystone.png", m_greystone_framebuffer);
+}
+
+bool Renderer::load_texture(const std::string& filename,
+                             std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> >& texture_framebuffer ) {
     int width, height, channels;
-    unsigned char* image = stbi_load("data/redbrick.png", &width, &height, &channels, 0);
+    unsigned char* image = stbi_load(filename.c_str(), &width, &height, &channels, 0);
 
     if (!image) {
         std::cerr << "Error: can not load textures" << std::endl;
+        return false;
     }
     
     if (channels != 3) {
         std::cerr << "Error: the texture must be a 24 bit image" << std::endl;
         stbi_image_free(image);
+        return false;
     }
     
-    m_redbrick_framebuffer.resize(width * height, (Eigen::Vector3f() << 0, 0, 0).finished());
+    texture_framebuffer.resize(width * height, (Eigen::Vector3f() << 0, 0, 0).finished());
     // loop over image and store into framebuffer
     for (size_t jj=0; jj<height; jj++) {
         for (size_t ii=0; ii<width; ii++) {
             uint8_t r = image[(ii+jj*width)*3 + 0];
             uint8_t g = image[(ii+jj*width)*3 + 1];
             uint8_t b = image[(ii+jj*width)*3 + 2];
-            m_redbrick_framebuffer[ii+jj*width] = (Eigen::Vector3f() << unsigned(r)/255.0,
+            texture_framebuffer[ii+jj*width] = (Eigen::Vector3f() << unsigned(r)/255.0,
                     unsigned(g)/255.0,
                     unsigned(b)/255.0).finished();
         }
     }
     stbi_image_free(image);
+    return true;
 }
 
 void Renderer::constant(const Eigen::Ref<const Eigen::Vector3f>& input_color) {
@@ -157,7 +172,7 @@ void Renderer::draw_map(const Map& input_map) {
     // draw the wall texture in the top corner
     for (size_t jj=0; jj<64; jj++) {
         for (size_t ii=0; ii < 64; ii++) {
-            m_framebuffer[ii + jj*m_width] = m_redbrick_framebuffer[ii + jj*64];
+            m_framebuffer[ii + jj*m_width] = m_wood_framebuffer[ii + jj*64];
         }
     }
 }
@@ -246,7 +261,9 @@ void Renderer::draw_fov(const Player& player, const Map& input_map) {
     }
 }
 
-
+// TODO textured wall function
+// get the correct texture column and scale based on required height
+// draw projection plane with solid colors
 void Renderer::draw_projection(const Player& player, const Map& input_map) {
     // initialize the projection framebuffer
     float fov = player.get_fov();
