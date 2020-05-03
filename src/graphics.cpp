@@ -282,21 +282,37 @@ void Renderer::draw_textured_projection(const Player& player, const Map& input_m
         // determine wall that is hit for color
         Eigen::Vector2f endpoint = player.cast_endpoint(true_dist, angle);
         // get fractional position of wall endpoint
+        float tex_hpos; //
+        if (side == 0) {
+            tex_hpos = endpoint(0) - std::floor(endpoint(0));
+        } else if (side == 1) {
+            tex_hpos = endpoint(1) - std::floor(endpoint(1));
+        }
+
         Eigen::Vector3f color = input_map.get_color(endpoint); 
         if (side) {
             color = color * 1.0/2.0; // scale color for vertical walls
         }
         // compute height of wall on projection plane
         size_t proj_wall_height = std::ceil(float(cube_size) / (std::cos(beta) * true_dist) * player.get_projection_dist());
-        // set the appropriate pixels in pp_framebuffer to a color
-        // get the pixel extents of the player marker
+
+        // get the correct column of the wall texture
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > column(proj_wall_height);
+        for (size_t jj=0; jj < proj_wall_height; jj++) {
+            // texture location in horizontal direction
+            size_t pix_x = tex_hpos * 64;
+            size_t pix_y = (jj*64)/proj_wall_height;
+            column[jj] = m_redbrick_framebuffer[pix_x + pix_y*64];
+        }
+
         /* #pragma omp parallel for */
         for (size_t jj = 0; jj < proj_wall_height; jj++) {
             size_t px =  ii;
             size_t py = m_pp_height/2-proj_wall_height/2 + jj;
             // make sure px,py lie in the framebuffer
             if ( px < m_pp_width && py < m_pp_height) {
-                m_pp_framebuffer[px + py*m_pp_width] = color;
+                /* m_pp_framebuffer[px + py*m_pp_width] = color; */
+                m_pp_framebuffer[px + py*m_pp_width] = column[jj];
             }
         }
 
