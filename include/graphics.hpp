@@ -23,6 +23,9 @@ class Renderer {
         void gradient( void ); 
 
         void constant(const Eigen::Ref<const Eigen::Vector3f>& input_color);
+        
+        // load the textures into the framebuffers
+        void load_textures( void ); 
 
         void write( void );
         void write(const std::string& filename);
@@ -58,6 +61,11 @@ class Renderer {
         size_t m_pp_height = 480;
         std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_pp_framebuffer;
 
+        // texture framebuffers
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_redbrick_framebuffer;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_wood_framebuffer;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_bluestone_framebuffer;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_greystone_framebuffer;
 };
 
 #endif

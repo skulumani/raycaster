@@ -4,6 +4,8 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include <cstdint>
 #include <algorithm>
@@ -21,6 +23,7 @@ void Renderer::init( void ) {
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
     m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 0, 0, 0).finished());
 }
+
 void Renderer::gradient( void ) {
     // loop over pixels in the frame buffer
     #pragma omp parallel for
@@ -29,6 +32,34 @@ void Renderer::gradient( void ) {
             m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << jj/float(m_height), ii/float(m_width), 0).finished();
         }
     }
+}
+
+void Renderer::load_textures( void ) {
+    int width, height, channels;
+    unsigned char* image = stbi_load("data/redbrick.png", &width, &height, &channels, 0);
+
+    if (!image) {
+        std::cerr << "Error: can not load textures" << std::endl;
+    }
+    
+    if (channels != 3) {
+        std::cerr << "Error: the texture must be a 24 bit image" << std::endl;
+        stbi_image_free(image);
+    }
+    
+    m_redbrick_framebuffer.resize(width * height, (Eigen::Vector3f() << 0, 0, 0).finished());
+    // loop over image and store into framebuffer
+    for (size_t jj=0; jj<height; jj++) {
+        for (size_t ii=0; ii<width; ii++) {
+            uint8_t r = image[(ii+jj*width)*3 + 0];
+            uint8_t g = image[(ii+jj*width)*3 + 1];
+            uint8_t b = image[(ii+jj*width)*3 + 2];
+            m_redbrick_framebuffer[ii+jj*width] = (Eigen::Vector3f() << unsigned(r)/255.0,
+                    unsigned(g)/255.0,
+                    unsigned(b)/255.0).finished();
+        }
+    }
+    stbi_image_free(image);
 }
 
 void Renderer::constant(const Eigen::Ref<const Eigen::Vector3f>& input_color) {
@@ -44,7 +75,7 @@ void Renderer::constant(const Eigen::Ref<const Eigen::Vector3f>& input_color) {
 void Renderer::write( void ) {
     
     // now saving to file
-    std::uint8_t image[m_framebuffer.size() * 3];
+    std::uint8_t image[m_width * m_height * 3];
     #pragma omp parallel for
     for (size_t ii = 0; ii < m_width * m_height; ii++) {
         image[ii * 3 + 0] = (int)(255 * m_framebuffer[ii](0));
@@ -55,9 +86,9 @@ void Renderer::write( void ) {
     stbi_write_jpg("map.jpg", m_width, m_height, 3, image, 95);
 
     // now saving to file
-    std::uint8_t image_pp[m_pp_framebuffer.size() * 3];
+    std::uint8_t image_pp[m_pp_width * m_pp_height * 3];
     #pragma omp parallel for
-    for (size_t ii = 0; ii < m_pp_framebuffer.size(); ii++) {
+    for (size_t ii = 0; ii < m_pp_width * m_pp_height; ii++) {
         image_pp[ii * 3 + 0] = (int)(255 * m_pp_framebuffer[ii](0));
         image_pp[ii * 3 + 1] = (int)(255 * m_pp_framebuffer[ii](1));
         image_pp[ii * 3 + 2] = (int)(255 * m_pp_framebuffer[ii](2));
@@ -72,8 +103,8 @@ void Renderer::write( void ) {
 void Renderer::write(const std::string& filename) {
     
     // now saving to file
-    std::uint8_t image[m_framebuffer.size() * 3];
-    #pragma omp parallel for
+    std::uint8_t image[512 * 512 * 3] = {0};
+    /* #pragma omp parallel for */
     for (size_t ii = 0; ii < m_width * m_height; ii++) {
         image[ii * 3 + 0] = (int)(255 * m_framebuffer[ii](0));
         image[ii * 3 + 1] = (int)(255 * m_framebuffer[ii](1));
@@ -85,9 +116,9 @@ void Renderer::write(const std::string& filename) {
     stbi_write_jpg(map_fname.c_str(), m_width, m_height, 3, image, 95);
 
     // now saving to file
-    std::uint8_t image_pp[m_pp_framebuffer.size() * 3];
-    #pragma omp parallel for
-    for (size_t ii = 0; ii < m_pp_framebuffer.size(); ii++) {
+    std::uint8_t image_pp[640 * 480 * 3] = {0};
+    /* #pragma omp parallel for */
+    for (size_t ii = 0; ii < m_pp_width * m_pp_height; ii++) {
         image_pp[ii * 3 + 0] = (int)(255 * m_pp_framebuffer[ii](0));
         image_pp[ii * 3 + 1] = (int)(255 * m_pp_framebuffer[ii](1));
         image_pp[ii * 3 + 2] = (int)(255 * m_pp_framebuffer[ii](2));
@@ -116,6 +147,14 @@ void Renderer::draw_map(const Map& input_map) {
                 m_framebuffer[ii+jj*m_width] = input_map.get_color(grid_coord);
                 /* m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << 0, 1, 1).finished(); */
             } 
+        }
+    }
+
+
+    // draw the wall texture in the top corner
+    for (size_t jj=0; jj<64; jj++) {
+        for (size_t ii=0; ii < 64; ii++) {
+            m_framebuffer[ii + jj*m_width] = m_redbrick_framebuffer[ii + jj*64];
         }
     }
 }

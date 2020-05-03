@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
     player.set_point_coord((Eigen::Vector2f() << 8 * cube_size, 8.5 * cube_size).finished());
     #pragma omp parallel for
-    for (int ii=0;ii<360;ii++) {
+    for (int ii=0;ii<360;ii+=45) {
         float direction = ii * PI/180.0;
         player.set_direction(direction);
         float dist = std::get<0>(player.cast(player.get_direction(),grid));

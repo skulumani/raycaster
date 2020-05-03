@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
 
     /* engine.gradient(); */
     engine.constant((Eigen::Vector3f() << 0.5, 0.5, 0.5).finished());
+    engine.load_textures();
     engine.draw_map(grid);
     engine.draw_player(player, grid);
     engine.draw_point(grid, endpoint, (Eigen::Vector3f() << 0.5, 1.0, 0.5).finished(), (Eigen::Vector3f() << 1, 0.5, 0.5).finished());
