@@ -59,6 +59,7 @@ class Renderer {
         void draw_fov(const Player& player, const Map& input_map);
 
         void draw_projection(const Player& player, const Map& input_map);
+        void draw_textured_projection(const Player& player, const Map& input_map);
 
         Eigen::Vector2i get_pp_size( void ) const;
         Eigen::Vector2i get_mm_size( void ) const;

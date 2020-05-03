@@ -263,6 +263,45 @@ void Renderer::draw_fov(const Player& player, const Map& input_map) {
 
 // TODO textured wall function
 // get the correct texture column and scale based on required height
+void Renderer::draw_textured_projection(const Player& player, const Map& input_map) {
+    // initialize the projection framebuffer
+    float fov = player.get_fov();
+    size_t cube_size = input_map.get_cube_size();
+    
+    // cast over the field of view
+    #pragma omp parallel for
+    for (size_t ii=0;ii<m_pp_width;ii++) {
+        float angle = player.get_direction() - fov/2.0 + ii * player.get_angle_step();
+        angle = player.wrap_angle(angle);
+        float beta = std::abs(player.get_direction() - angle);
+        // for each get the distance to wall
+        auto cast_out = player.cast(angle, input_map);
+        float true_dist = std::get<0>(cast_out);
+        int side = std::get<1>(cast_out);
+
+        // determine wall that is hit for color
+        Eigen::Vector2f endpoint = player.cast_endpoint(true_dist, angle);
+        // get fractional position of wall endpoint
+        Eigen::Vector3f color = input_map.get_color(endpoint); 
+        if (side) {
+            color = color * 1.0/2.0; // scale color for vertical walls
+        }
+        // compute height of wall on projection plane
+        size_t proj_wall_height = std::ceil(float(cube_size) / (std::cos(beta) * true_dist) * player.get_projection_dist());
+        // set the appropriate pixels in pp_framebuffer to a color
+        // get the pixel extents of the player marker
+        /* #pragma omp parallel for */
+        for (size_t jj = 0; jj < proj_wall_height; jj++) {
+            size_t px =  ii;
+            size_t py = m_pp_height/2-proj_wall_height/2 + jj;
+            // make sure px,py lie in the framebuffer
+            if ( px < m_pp_width && py < m_pp_height) {
+                m_pp_framebuffer[px + py*m_pp_width] = color;
+            }
+        }
+
+    }
+}
 // draw projection plane with solid colors
 void Renderer::draw_projection(const Player& player, const Map& input_map) {
     // initialize the projection framebuffer
