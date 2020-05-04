@@ -110,10 +110,10 @@ Eigen::Vector3f Map::get_color(const Eigen::Ref<const Eigen::Vector2i>& grid_coo
     // get value of map at this point 
     switch (m_map(grid_coord(0), grid_coord(1))) {
     // switch statement to determine color
-        case 1: color << 1, 0, 0; break;// red
-        case 2: color << 0, 1, 0; break; // green
-        case 3: color << 0, 0, 1; break; // blue
-        case 4: color << 0, 1, 1; break; // cyan
+        case 1: color << 1, 0, 0; break;// red - redbrick.png
+        case 2: color << 0, 1, 0; break; // green - wood.png
+        case 3: color << 0, 0, 1; break; // blue - bluestone.png
+        case 4: color << 0, 1, 1; break; // cyan - greystone.png
         default: color << 1, 1, 0; break; // yellow
     }
 

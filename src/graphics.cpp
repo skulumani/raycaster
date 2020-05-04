@@ -4,6 +4,7 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include "stb_image.h"
 
 #include <cstdint>
 #include <algorithm>
@@ -20,6 +21,11 @@ void Renderer::init( void ) {
 
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
     m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 0, 0, 0).finished());
+}
+
+void Renderer::load_textures( void ) {
+
+    // load each texture to framebuffer
 }
 
 void Renderer::clear( void ) {

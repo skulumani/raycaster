@@ -4,6 +4,7 @@
 #include "map.hpp"
 #include "player.hpp"
 
+
 #include <Eigen/Dense>
 #include <Eigen/StdVector> 
 
@@ -18,7 +19,9 @@ class Renderer {
         Renderer( void );
         virtual ~Renderer( void ) {};
         
-        void init( void );
+        void init( void ); // also load all the textures into the framebuffers
+        void load_textures( void );
+
         // File framebuffer with a gradient color scheme
         void gradient( void ); 
 
@@ -70,6 +73,12 @@ class Renderer {
         size_t m_pp_height = 480;
         std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_pp_framebuffer;
 
+        // create framebuffer for each expected texture
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_redbrick_fb;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_wood_fb;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_bluestone_fb;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_greystone_fb;
+    
 };
 
 #endif
