@@ -26,6 +26,11 @@ class Renderer {
         void gradient( void ); 
 
         void constant(const Eigen::Ref<const Eigen::Vector3f>& input_color);
+        
+        // load the textures into the framebuffers
+        void load_wall_textures( void ); 
+        bool load_texture(const std::string& filename,
+                          std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> >& texture_framebuffer );
 
         void write( void );
         void write(const std::string& filename);
@@ -57,6 +62,7 @@ class Renderer {
         void draw_fov(const Player& player, const Map& input_map);
 
         void draw_projection(const Player& player, const Map& input_map);
+        void draw_textured_projection(const Player& player, const Map& input_map);
 
         Eigen::Vector2i get_pp_size( void ) const;
         Eigen::Vector2i get_mm_size( void ) const;
@@ -73,12 +79,11 @@ class Renderer {
         size_t m_pp_height = 480;
         std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_pp_framebuffer;
 
-        // create framebuffer for each expected texture
-        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_redbrick_fb;
-        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_wood_fb;
-        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_bluestone_fb;
-        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_greystone_fb;
-    
+        // texture framebuffers
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_redbrick_framebuffer;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_wood_framebuffer;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_bluestone_framebuffer;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > m_greystone_framebuffer;
 };
 
 #endif

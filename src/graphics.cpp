@@ -4,6 +4,7 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #include <cstdint>
@@ -13,6 +14,8 @@
 
 Renderer::Renderer( void ) {
     init();
+    // load wall textures
+    load_wall_textures();
 }
 
 void Renderer::init( void ) {
@@ -21,6 +24,7 @@ void Renderer::init( void ) {
 
     m_framebuffer.resize(m_width * m_height, (Eigen::Vector3f() << 1, 1, 1).finished());
     m_pp_framebuffer.resize(m_pp_width * m_pp_height, (Eigen::Vector3f() << 0, 0, 0).finished());
+
 }
 
 void Renderer::load_textures( void ) {
@@ -42,6 +46,46 @@ void Renderer::gradient( void ) {
     }
 }
 
+void Renderer::load_wall_textures( void ) {
+    // load all the wall textures
+    load_texture("data/redbrick.png", m_redbrick_framebuffer);
+    load_texture("data/wood.png", m_wood_framebuffer);
+    load_texture("data/bluestone.png", m_bluestone_framebuffer);
+    load_texture("data/greystone.png", m_greystone_framebuffer);
+}
+
+bool Renderer::load_texture(const std::string& filename,
+                             std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> >& texture_framebuffer ) {
+    int width, height, channels;
+    unsigned char* image = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+
+    if (!image) {
+        std::cerr << "Error: can not load textures" << std::endl;
+        return false;
+    }
+    
+    if (channels != 3) {
+        std::cerr << "Error: the texture must be a 24 bit image" << std::endl;
+        stbi_image_free(image);
+        return false;
+    }
+    
+    texture_framebuffer.resize(width * height, (Eigen::Vector3f() << 0, 0, 0).finished());
+    // loop over image and store into framebuffer
+    for (size_t jj=0; jj<height; jj++) {
+        for (size_t ii=0; ii<width; ii++) {
+            uint8_t r = image[(ii+jj*width)*3 + 0];
+            uint8_t g = image[(ii+jj*width)*3 + 1];
+            uint8_t b = image[(ii+jj*width)*3 + 2];
+            texture_framebuffer[ii+jj*width] = (Eigen::Vector3f() << unsigned(r)/255.0,
+                    unsigned(g)/255.0,
+                    unsigned(b)/255.0).finished();
+        }
+    }
+    stbi_image_free(image);
+    return true;
+}
+
 void Renderer::constant(const Eigen::Ref<const Eigen::Vector3f>& input_color) {
     // loop over pixels in the frame buffer
     #pragma omp parallel for
@@ -55,7 +99,7 @@ void Renderer::constant(const Eigen::Ref<const Eigen::Vector3f>& input_color) {
 void Renderer::write( void ) {
     
     // now saving to file
-    std::uint8_t image[m_framebuffer.size() * 3];
+    std::uint8_t image[m_width * m_height * 3];
     #pragma omp parallel for
     for (size_t ii = 0; ii < m_width * m_height; ii++) {
         image[ii * 3 + 0] = (int)(255 * m_framebuffer[ii](0));
@@ -66,9 +110,9 @@ void Renderer::write( void ) {
     stbi_write_jpg("map.jpg", m_width, m_height, 3, image, 95);
 
     // now saving to file
-    std::uint8_t image_pp[m_pp_framebuffer.size() * 3];
+    std::uint8_t image_pp[m_pp_width * m_pp_height * 3];
     #pragma omp parallel for
-    for (size_t ii = 0; ii < m_pp_framebuffer.size(); ii++) {
+    for (size_t ii = 0; ii < m_pp_width * m_pp_height; ii++) {
         image_pp[ii * 3 + 0] = (int)(255 * m_pp_framebuffer[ii](0));
         image_pp[ii * 3 + 1] = (int)(255 * m_pp_framebuffer[ii](1));
         image_pp[ii * 3 + 2] = (int)(255 * m_pp_framebuffer[ii](2));
@@ -82,8 +126,8 @@ void Renderer::write( void ) {
 void Renderer::write(const std::string& filename) {
     
     // now saving to file
-    std::uint8_t image[m_framebuffer.size() * 3];
-    #pragma omp parallel for
+    std::uint8_t image[512 * 512 * 3] = {0};
+    /* #pragma omp parallel for */
     for (size_t ii = 0; ii < m_width * m_height; ii++) {
         image[ii * 3 + 0] = (int)(255 * m_framebuffer[ii](0));
         image[ii * 3 + 1] = (int)(255 * m_framebuffer[ii](1));
@@ -95,9 +139,9 @@ void Renderer::write(const std::string& filename) {
     stbi_write_jpg(map_fname.c_str(), m_width, m_height, 3, image, 95);
 
     // now saving to file
-    std::uint8_t image_pp[m_pp_framebuffer.size() * 3];
-    #pragma omp parallel for
-    for (size_t ii = 0; ii < m_pp_framebuffer.size(); ii++) {
+    std::uint8_t image_pp[640 * 480 * 3] = {0};
+    /* #pragma omp parallel for */
+    for (size_t ii = 0; ii < m_pp_width * m_pp_height; ii++) {
         image_pp[ii * 3 + 0] = (int)(255 * m_pp_framebuffer[ii](0));
         image_pp[ii * 3 + 1] = (int)(255 * m_pp_framebuffer[ii](1));
         image_pp[ii * 3 + 2] = (int)(255 * m_pp_framebuffer[ii](2));
@@ -126,6 +170,14 @@ void Renderer::draw_map(const Map& input_map) {
                 m_framebuffer[ii+jj*m_width] = input_map.get_color(grid_coord);
                 /* m_framebuffer[ii+jj*m_width] = (Eigen::Vector3f() << 0, 1, 1).finished(); */
             } 
+        }
+    }
+
+
+    // draw the wall texture in the top corner
+    for (size_t jj=0; jj<64; jj++) {
+        for (size_t ii=0; ii < 64; ii++) {
+            m_framebuffer[ii + jj*m_width] = m_wood_framebuffer[ii + jj*64];
         }
     }
 }
@@ -214,7 +266,64 @@ void Renderer::draw_fov(const Player& player, const Map& input_map) {
     }
 }
 
+// TODO textured wall function
+// get the correct texture column and scale based on required height
+void Renderer::draw_textured_projection(const Player& player, const Map& input_map) {
+    // initialize the projection framebuffer
+    float fov = player.get_fov();
+    size_t cube_size = input_map.get_cube_size();
+    
+    // cast over the field of view
+    #pragma omp parallel for
+    for (size_t ii=0;ii<m_pp_width;ii++) {
+        float angle = player.get_direction() - fov/2.0 + ii * player.get_angle_step();
+        angle = player.wrap_angle(angle);
+        float beta = std::abs(player.get_direction() - angle);
+        // for each get the distance to wall
+        auto cast_out = player.cast(angle, input_map);
+        float true_dist = std::get<0>(cast_out);
+        int side = std::get<1>(cast_out);
 
+        // determine wall that is hit for color
+        Eigen::Vector2f endpoint = player.cast_endpoint(true_dist, angle);
+        // get fractional position of wall endpoint
+        float tex_hpos; //
+        if (side == 0) {
+            tex_hpos = endpoint(0) - std::floor(endpoint(0));
+        } else if (side == 1) {
+            tex_hpos = endpoint(1) - std::floor(endpoint(1));
+        }
+
+        Eigen::Vector3f color = input_map.get_color(endpoint); 
+        if (side) {
+            color = color * 1.0/2.0; // scale color for vertical walls
+        }
+        // compute height of wall on projection plane
+        size_t proj_wall_height = std::ceil(float(cube_size) / (std::cos(beta) * true_dist) * player.get_projection_dist());
+
+        // get the correct column of the wall texture
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > column(proj_wall_height);
+        for (size_t jj=0; jj < proj_wall_height; jj++) {
+            // texture location in horizontal direction
+            size_t pix_x = tex_hpos * 64;
+            size_t pix_y = (jj*64)/proj_wall_height;
+            column[jj] = m_redbrick_framebuffer[pix_x + pix_y*64];
+        }
+
+        /* #pragma omp parallel for */
+        for (size_t jj = 0; jj < proj_wall_height; jj++) {
+            size_t px =  ii;
+            size_t py = m_pp_height/2-proj_wall_height/2 + jj;
+            // make sure px,py lie in the framebuffer
+            if ( px < m_pp_width && py < m_pp_height) {
+                /* m_pp_framebuffer[px + py*m_pp_width] = color; */
+                m_pp_framebuffer[px + py*m_pp_width] = column[jj];
+            }
+        }
+
+    }
+}
+// draw projection plane with solid colors
 void Renderer::draw_projection(const Player& player, const Map& input_map) {
     // initialize the projection framebuffer
     float fov = player.get_fov();
