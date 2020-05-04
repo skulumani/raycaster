@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <iostream>
 #include <string> 
+#include <cmath>
 
 Renderer::Renderer( void ) {
     init();
@@ -174,12 +175,12 @@ void Renderer::draw_map(const Map& input_map) {
     }
 
 
-    // draw the wall texture in the top corner
-    for (size_t jj=0; jj<64; jj++) {
-        for (size_t ii=0; ii < 64; ii++) {
-            m_framebuffer[ii + jj*m_width] = m_wood_framebuffer[ii + jj*64];
-        }
-    }
+    /* // draw the wall texture in the top corner */
+    /* for (size_t jj=0; jj<64; jj++) { */
+    /*     for (size_t ii=0; ii < 64; ii++) { */
+    /*         m_framebuffer[ii + jj*m_width] = m_wood_framebuffer[ii + jj*64]; */
+    /*     } */
+    /* } */
 }
 
 void Renderer::draw_player(const Player& input_player, const Map& input_map) {
@@ -286,7 +287,10 @@ void Renderer::draw_textured_projection(const Player& player, const Map& input_m
 
         // determine wall that is hit for color
         Eigen::Vector2f endpoint = player.cast_endpoint(true_dist, angle);
+        int grid_val = input_map.get_map_val(endpoint);
+
         // get fractional position of wall endpoint
+        //endpoint.array().transpose() - endpoint.array().floor().transpose() 
         float tex_hpos; //
         if (side == 0) {
             tex_hpos = endpoint(0) - std::floor(endpoint(0));
@@ -303,17 +307,22 @@ void Renderer::draw_textured_projection(const Player& player, const Map& input_m
 
         // get the correct column of the wall texture
         std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > column(proj_wall_height);
-        for (size_t jj=0; jj < proj_wall_height; jj++) {
-            // texture location in horizontal direction
-            size_t pix_x = tex_hpos * 64;
-            size_t pix_y = (jj*64)/proj_wall_height;
-            column[jj] = m_redbrick_framebuffer[pix_x + pix_y*64];
-        }
 
         /* #pragma omp parallel for */
         for (size_t jj = 0; jj < proj_wall_height; jj++) {
             size_t px =  ii;
             size_t py = m_pp_height/2-proj_wall_height/2 + jj;
+            size_t pix_x = tex_hpos * 64;
+            size_t pix_y = (jj*64)/proj_wall_height;
+
+            // pick the correct wall texture based on the value of the grid
+            switch (grid_val) {
+                case 1: column[jj] = m_redbrick_framebuffer[pix_x + pix_y*64]; break;
+                case 2: column[jj] = m_wood_framebuffer[pix_x + pix_y*64]; break;
+                case 3: column[jj] = m_bluestone_framebuffer[pix_x + pix_y*64]; break;
+                case 4: column[jj] = m_greystone_framebuffer[pix_x + pix_y*64]; break;
+                default: column[jj] = m_redbrick_framebuffer[pix_x + pix_y*64]; break;
+            }
             // make sure px,py lie in the framebuffer
             if ( px < m_pp_width && py < m_pp_height) {
                 /* m_pp_framebuffer[px + py*m_pp_width] = color; */

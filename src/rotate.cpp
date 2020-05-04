@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
     player.set_point_coord((Eigen::Vector2f() << 6.1 * cube_size, 6.5 * cube_size).finished());
     #pragma omp parallel for
-    for (int ii=0;ii<360;ii+=45) {
+    for (int ii=0;ii<360;ii+=1) {
         float direction = ii * PI/180.0;
         player.set_direction(direction);
         float dist = std::get<0>(player.cast(player.get_direction(),grid));
@@ -33,7 +33,9 @@ int main(int argc, char* argv[]) {
         /* engine.draw_line(player.get_point_coord(), endpoint, grid); */
 
         engine.draw_fov(player, grid); 
-        engine.draw_projection(player, grid);
+        /* engine.draw_projection(player, grid); */
+        engine.draw_textured_projection(player, grid);
+
         std::ostringstream os;
         os << ii << "_rotate_";
         engine.write(os.str());    

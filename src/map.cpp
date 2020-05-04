@@ -124,3 +124,12 @@ Eigen::Vector3f Map::get_color(const Eigen::Ref<const Eigen::Vector2f>& point_co
     Eigen::Vector2i grid_coord = point2grid(point_coord);
     return get_color(grid_coord);
 }
+
+int Map::get_map_val(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const {
+    return m_map(grid_coord(0), grid_coord(1));
+}
+
+int Map::get_map_val(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const {
+    Eigen::Vector2i grid_coord = point2grid(point_coord);
+    return get_map_val(grid_coord);
+}

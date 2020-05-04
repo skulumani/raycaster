@@ -18,7 +18,10 @@ class Map {
 
         // Map defined with x,y coord. Origin is top left of map
         Eigen::MatrixXi get_map( void ) const;
-        
+
+        int get_map_val(const Eigen::Ref<const Eigen::Vector2i>& grid_coord) const;
+        int get_map_val(const Eigen::Ref<const Eigen::Vector2f>& point_coord) const;
+
         size_t get_map_size( void ) const;
         size_t get_cube_size( void ) const;
         // function to convert from location coord to grid/block coord
